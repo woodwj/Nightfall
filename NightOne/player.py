@@ -4,7 +4,7 @@ from settings import *
 class player(pg.sprite.Sprite):
     def __init__(self, gameScene, tile_x, tile_y):
         # only want player in all sprites group
-        self.groups = gameScene.objects.all_sprites
+        self.groups = gameScene.objects.groupAll
         # initilize the super with desired groups
         pg.sprite.Sprite.__init__(self, self.groups)
         # for faster coding save to local variable and acess in other class functions

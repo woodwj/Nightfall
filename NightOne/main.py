@@ -1,6 +1,7 @@
 import pygame as pg
 import player
 import grid
+import wall
 # * import makes varibles exist in main - use varName rather than settings.varName
 from settings import *
 pg.init()
@@ -12,6 +13,7 @@ class gameScene:
         self.state = gameState()
         self.objects = gameObjects(self)
         self.objects.load()
+        
 
     def events(self):
         for event in pg.event.get():
@@ -30,25 +32,27 @@ class gameScene:
                     self.objects.player.move(vel_y=1)
 
 
-
     def draw(self):
         self.state.screen.fill(bgColour)
-        self.objects.all_sprites.draw(self.state.screen)
+        self.objects.groupAll.draw(self.state.screen)
         grid.draw_Grid(self)
     
 
     def update(self):
-        self.objects.all_sprites.update()
+        self.objects.groupAll.update()
 
 
 # class for object that exists in game
 class gameObjects:
     def __init__(self, gameScene):
-        self.all_sprites = pg.sprite.Group()
+        self.groupAll = pg.sprite.Group()
+        self.groupWalls = pg.sprite.Group()
         self.gameScene = gameScene
 
     def load(self):
         self.player = player.player(self.gameScene, 0,0)
+        for x in range(0,10):
+            wall.wall(self.gameScene, x,4)
 
 # class for setting config
 class gameState:
@@ -66,7 +70,8 @@ class gameState:
 # instatiate
 clock = pg.time.Clock()
 Game = gameScene()
-
+pg.key.set_repeat(500, 100)
+pg.display.set_caption(title)
 # Mainloop
 
 while not Game.done:
