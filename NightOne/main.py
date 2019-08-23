@@ -4,17 +4,17 @@ py.init()
 # class for mainApplication passed the object from game settings
 class mainApplication :
     def __init__(self, config ):
-        self.screen = py.display.set_mode( config.size )
+        self.screen = py.display.set_mode( config._size )
 
 # class for setting config
 class gameStateConfig :
     def __init__(self, setting_file):
         # self.cfg = setting_file -- eventually add json setting data e.g screen size ect.
-        self.width = 700
-        self.half_w = int( 0.5*self.width )
-        self.height = 500
-        self.half_h = int( 0.5*self.height )
-        self.size = (self.width,self.height)
+        self._width = 300
+        self._half_w = int( 0.5*self._width )
+        self._height = 200
+        self._half_h = int( 0.5*self._height )
+        self._size = (self._width,self._height)
 
 # instatiate
 config = gameStateConfig("settings.json")
@@ -36,7 +36,7 @@ while not done:
     font = py.font.SysFont('Calibri', 15, True, False)
     text = font.render("Hello World", True, RED)
     # this blits the top right of text to slightly up and to the right
-    mainApp.screen.blit(text, [config.half_w- 50, config.half_h - 50])
+    mainApp.screen.blit(text, [config._half_w - 25, config._half_h - 20])
  
     # lock frame rate and update the display
     py.display.flip()
