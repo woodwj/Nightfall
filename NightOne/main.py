@@ -1,46 +1,63 @@
-import pygame as py
-py.init()
+import pygame as pg
+# * import makes varibles exist in main - use varName rather than settings.varName
+from settings import *
+pg.init()
 
-# class for mainApplication passed the object from game settings
-class mainApplication :
-    def __init__(self, config ):
-        self.screen = py.display.set_mode( config._size )
+# master class that hold the game objects and settings
+class game:
+    def __init__(self):
+        self.state = gameState()
+        self.objects = gameObjects()
+
+    def draw_Grid(self):
+        for x in range(0, self.state._width, tileSize):
+            pg.draw.line(self.state.screen, WHITE, (x, 0), (x, self.state._height))
+        for y in range(0, self.state._height, tileSize):
+            pg.draw.line(self.state.screen, WHITE, (0, y), (self.state._width, y))
+
+
+# class for object that exists in game
+class gameObjects:
+    def __init__(self):
+        self.ijunk = 0
+
+        
 
 # class for setting config
-class gameStateConfig :
-    def __init__(self, setting_file):
-        # self.cfg = setting_file -- eventually add json setting data e.g screen size ect.
-        self._width = 300
+class gameState:
+    def __init__(self):
+        # setting file now a py file
+        self._width = screenWidth
+        self._height = screenHeight
         self._half_w = int( 0.5*self._width )
-        self._height = 200
         self._half_h = int( 0.5*self._height )
         self._size = (self._width,self._height)
+        self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        
 
 # instatiate
-config = gameStateConfig("settings.json")
-mainApp = mainApplication(config)
-clock = py.time.Clock()
 
-# Just some colours
-BLACK = (255,255,255)
-RED = (255, 0, 0)
+clock = pg.time.Clock()
+Game = game()
+
 
 # Mainloop
 done = False
 while not done:
-    for event in py.event.get():
-        if event.type == py.QUIT:
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
             done = True
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_ESCAPE:
+                done = True
 
-    # write hello world to the screen
-    font = py.font.SysFont('Calibri', 15, True, False)
-    text = font.render("Hello World", True, RED)
-    # this blits the top right of text to slightly up and to the right
-    mainApp.screen.blit(text, [config._half_w - 25, config._half_h - 20])
+    # screen drawing
+    Game.draw_Grid()
+
  
     # lock frame rate and update the display
-    py.display.flip()
-    clock.tick(60)
+    pg.display.flip()
+    clock.tick(FPS)
  
 # Close the window and quit.
-py.quit()
+pg.quit()
