@@ -1,27 +1,54 @@
 import pygame as pg
+import player
+import grid
 # * import makes varibles exist in main - use varName rather than settings.varName
 from settings import *
 pg.init()
 
 # master class that hold the game objects and settings
-class game:
+class gameScene:
     def __init__(self):
+        self.done = False
         self.state = gameState()
-        self.objects = gameObjects()
+        self.objects = gameObjects(self)
+        self.objects.load()
 
-    def draw_Grid(self):
-        for x in range(0, self.state._width, tileSize):
-            pg.draw.line(self.state.screen, WHITE, (x, 0), (x, self.state._height))
-        for y in range(0, self.state._height, tileSize):
-            pg.draw.line(self.state.screen, WHITE, (0, y), (self.state._width, y))
+    def events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.done = True
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    self.done = True
+                if event.key == pg.K_LEFT:
+                    self.objects.player.move(vel_x=-1)
+                if event.key == pg.K_RIGHT:
+                    self.objects.player.move(vel_x=1)
+                if event.key == pg.K_UP:
+                    self.objects.player.move(vel_y=-1)
+                if event.key == pg.K_DOWN:
+                    self.objects.player.move(vel_y=1)
+
+
+
+    def draw(self):
+        self.state.screen.fill(bgColour)
+        self.objects.all_sprites.draw(self.state.screen)
+        grid.draw_Grid(self)
+    
+
+    def update(self):
+        self.objects.all_sprites.update()
 
 
 # class for object that exists in game
 class gameObjects:
-    def __init__(self):
-        self.ijunk = 0
+    def __init__(self, gameScene):
+        self.all_sprites = pg.sprite.Group()
+        self.gameScene = gameScene
 
-        
+    def load(self):
+        self.player = player.player(self.gameScene, 0,0)
 
 # class for setting config
 class gameState:
@@ -32,32 +59,25 @@ class gameState:
         self._half_w = int( 0.5*self._width )
         self._half_h = int( 0.5*self._height )
         self._size = (self._width,self._height)
-        self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        self.screen = pg.display.set_mode(self._size)
         
 
 # instatiate
-
 clock = pg.time.Clock()
-Game = game()
-
+Game = gameScene()
 
 # Mainloop
-done = False
-while not done:
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            done = True
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_ESCAPE:
-                done = True
 
-    # screen drawing
-    Game.draw_Grid()
+while not Game.done:
+    Game.draw()
+    Game.update()
+    Game.events()
 
- 
     # lock frame rate and update the display
     pg.display.flip()
     clock.tick(FPS)
+
  
 # Close the window and quit.
 pg.quit()
