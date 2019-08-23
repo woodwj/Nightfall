@@ -23,19 +23,20 @@ class gameScene:
                 if event.key == pg.K_ESCAPE:
                     self.done = True
                 if event.key == pg.K_LEFT:
-                    self.objects.player.move(vel_x=-1)
+                    self.objects.player.move(del_x=-1)
                 if event.key == pg.K_RIGHT:
-                    self.objects.player.move(vel_x=1)
+                    self.objects.player.move(del_x=1)
                 if event.key == pg.K_UP:
-                    self.objects.player.move(vel_y=-1)
+                    self.objects.player.move(del_y=-1)
                 if event.key == pg.K_DOWN:
-                    self.objects.player.move(vel_y=1)
+                    self.objects.player.move(del_y=1)
 
 
     def draw(self):
         self.state.screen.fill(bgColour)
-        self.objects.groupAll.draw(self.state.screen)
         grid.draw_Grid(self)
+        self.objects.groupAll.draw(self.state.screen)
+        
     
 
     def update(self):
