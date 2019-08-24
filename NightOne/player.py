@@ -12,10 +12,10 @@ class player(pg.sprite.Sprite):
         self.gameScene = gameScene
         self.gameObjects = gameObjects
         # create the square on the surface
-        self.image = pg.Surface((s_tileSize, s_tileSize))
+        self.image = pg.Surface((self.gameScene.state.tileSize, self.gameScene.state.tileSize))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.pos_x, self.pos_y = utils.mult2by1(tile_x , tile_y, s_tileSize)
+        self.pos_x, self.pos_y = utils.mult2by1(tile_x , tile_y, self.gameScene.state.tileSize)
         self.vel_x, self.vel_y = 0,0
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular

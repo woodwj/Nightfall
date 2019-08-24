@@ -13,8 +13,8 @@ s_screenHeight = 1080
 s_FPS = 60
 s_title = "NightOne"
 s_tileSize = 32
-s_gridWidth = s_screenWidth/s_tileSize
-s_gridHeight = s_screenHeight/s_tileSize
+s_gridWidth = int(s_screenWidth/s_tileSize)
+s_gridHeight = int(s_screenHeight/s_tileSize)
 
 # player settings
 p_speed = 250

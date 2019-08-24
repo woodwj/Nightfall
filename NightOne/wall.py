@@ -8,10 +8,10 @@ class wall(pg.sprite.Sprite):
             # initilize the super with desired groups
             pg.sprite.Sprite.__init__(self, self.groups)
             # for faster coding save to local variable and acess in other class functions
-            self._gameScene = gameScene
-            self.image = pg.Surface((s_tileSize, s_tileSize))
+            self.gameScene = gameScene
+            self.image = pg.Surface((self.gameScene.state.tileSize, self.gameScene.state.tileSize))
             self.image.fill(BLUE)
             self.rect = self.image.get_rect()
-            self.x , self.y = tile_x, tile_y
-            self.rect.x = self.x * s_tileSize
-            self.rect.y = self.y * s_tileSize
+            self.pos_x , self.pos_y = tile_x, tile_y
+            self.rect.x = self.pos_x * self.gameScene.state.tileSize
+            self.rect.y = self.pos_y * self.gameScene.state.tileSize
