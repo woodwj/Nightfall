@@ -1,4 +1,5 @@
 import pygame as pg
+import utils
 from settings import *
 
 class player(pg.sprite.Sprite):
@@ -13,7 +14,7 @@ class player(pg.sprite.Sprite):
         self.image = pg.Surface((s_tileSize, s_tileSize))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.pos_x, self.pos_y = tile_x, tile_y
+        self.pos_x, self.pos_y = utils.mult2by1(tile_x , tile_y, s_tileSize)
         self.vel_x, self.vel_y = 0,0
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
@@ -22,11 +23,11 @@ class player(pg.sprite.Sprite):
         self.vel_x, self.vel_y = 0,0
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.vel_x = p_speed * -1
-        elif keys[pg.K_RIGHT] or keys[pg.K_d]:
+        if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.vel_x = p_speed 
-        elif keys[pg.K_UP] or keys[pg.K_w]:
+        if keys[pg.K_UP] or keys[pg.K_w]:
             self.vel_y = p_speed * -1
-        elif keys[pg.K_DOWN] or keys[pg.K_s]:
+        if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel_y = p_speed 
             
 
