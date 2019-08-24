@@ -11,7 +11,7 @@ pg.init()
 # master class that hold the game objects and settings
 class gameScene:
     def __init__(self):
-        self.del_t = 0
+        
         self.done = False
         self.clock = pg.time.Clock()
         self.initScene()
@@ -61,9 +61,10 @@ class gameObjects:
 # class for setting config
 class gameState:
     def __init__(self):
+        self.del_t = 0
         # setting file now a py file
         pg.display.set_caption(s_title)
-        pg.key.set_repeat(500, 100)
+        #pg.key.set_repeat(500, 100)
         self.screenWidth = s_screenWidth
         self.screenHeight = s_screenHeight
         self.tileSize = s_tileSize
@@ -73,8 +74,8 @@ class gameState:
         self.half_w = int( 0.5*self.screenWidth )
         self.half_h = int( 0.5*self.screenHeight )
         self.size = (self.screenWidth,self.screenHeight)
-        #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
-        self.screen = pg.display.set_mode(self.size)
+        self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        #self.screen = pg.display.set_mode(self.size)
 
 
 
@@ -86,7 +87,7 @@ Game = gameScene()
 # Mainloop
 
 while not Game.done:
-    Game.del_t = Game.clock.tick(Game.state.FPS) / 1000
+    Game.state.del_t = Game.clock.tick(Game.state.FPS) / 1000
     Game.events()
     Game.update()
     Game.draw()

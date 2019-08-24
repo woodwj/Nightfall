@@ -20,8 +20,9 @@ class player(pg.sprite.Sprite):
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
     def controls(self):
-        keys = pg.key.get_pressed()
+        
         self.vel_x, self.vel_y = 0,0
+        keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.vel_x = p_speed * -1
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
@@ -65,6 +66,6 @@ class player(pg.sprite.Sprite):
 
     def update(self):
         self.controls()
-        self.del_x, self.del_y = utils.mult2by1(self.vel_x, self.vel_y, self.gameScene.del_t)
+        self.del_x, self.del_y = utils.mult2by1(self.vel_x, self.vel_y, self.gameScene.state.del_t)
         self.move(self.del_x, self.del_y)
         
