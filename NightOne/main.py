@@ -60,7 +60,7 @@ class gameObjects:
                     if tile == "w":
                         wall.wall(self.gameScene, tile_x, tile_y)
                     if tile == "P":
-                        self.player = player.player(self.gameScene, tile_x,tile_y)
+                        self.player = player.player(self.gameScene,self,tile_x,tile_y)
 
                     tile_x +=1
             

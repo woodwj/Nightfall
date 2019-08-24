@@ -3,13 +3,14 @@ import utils
 from settings import *
 
 class player(pg.sprite.Sprite):
-    def __init__(self, gameScene, tile_x, tile_y):
+    def __init__(self, gameScene, gameObjects, tile_x, tile_y):
         # only want player in all sprites group
-        self.groups = gameScene.objects.groupAll
+        self.groups = gameObjects.groupAll
         # initilize the super with desired groups
         pg.sprite.Sprite.__init__(self, self.groups)
         # for faster coding save to local variable and acess in other class functions
         self.gameScene = gameScene
+        self.gameObjects = gameObjects
         # create the square on the surface
         self.image = pg.Surface((s_tileSize, s_tileSize))
         self.image.fill(RED)
@@ -34,20 +35,36 @@ class player(pg.sprite.Sprite):
             self.vel_x, self.vel_y = utils.mult2by1(self.vel_x, self.vel_y, 0.7071)
             
 
-    def move(self, del_x=0, del_y=0):
-        if not self.wallCollide(del_x, del_y):
-            self.pos_x += del_x
-            self.pos_y += del_y
+    def move(self, del_x, del_y):
+        self.pos_x , self.pos_y = self.pos_x + del_x , self.pos_y + del_y
+        self.rect.x = self.pos_x
+        self.collide_with_walls('x')
+        self.rect.y = self.pos_y
+        self.collide_with_walls('y')
 
-    def wallCollide(self, del_x = 0, del_y = 0):
-        for wall in self.gameScene.objects.groupWalls:
-            if wall.x == self.pos_x + del_x and wall.y == self.pos_y + del_y:
-                return True
-        return False
+    def collide_with_walls(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.gameObjects.groupWalls, False)
+            if hits:
+                if self.vel_x > 0:
+                    self.pos_x = hits[0].rect.left - self.rect.width
+                if self.vel_x < 0:
+                    self.pos_x = hits[0].rect.right
+                self.vel_x = 0
+                self.rect.x = self.pos_x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.gameObjects.groupWalls, False)
+            if hits:
+                if self.vel_y > 0:
+                    self.pos_y = hits[0].rect.top - self.rect.height
+                if self.vel_y < 0:
+                    self.pos_y = hits[0].rect.bottom
+                self.vel_y = 0
+                self.rect.y = self.pos_y
 
 
     def update(self):
         self.controls()
-        self.pos_x += self.vel_x * self.gameScene.del_t
-        self.pos_y += self.vel_y * self.gameScene.del_t
-        self.rect.topleft = (self.pos_x, self.pos_y)
+        self.del_x, self.del_y = utils.mult2by1(self.vel_x, self.vel_y, self.gameScene.del_t)
+        self.move(self.del_x, self.del_y)
+        
