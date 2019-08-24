@@ -28,7 +28,10 @@ class player(pg.sprite.Sprite):
         if keys[pg.K_UP] or keys[pg.K_w]:
             self.vel_y = p_speed * -1
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vel_y = p_speed 
+            self.vel_y = p_speed
+        # code to fix the diagonal speed problem    
+        if self.vel_y !=0 and self.vel_x !=0:
+            self.vel_x, self.vel_y = utils.mult2by1(self.vel_x, self.vel_y, 0.7071)
             
 
     def move(self, del_x=0, del_y=0):
