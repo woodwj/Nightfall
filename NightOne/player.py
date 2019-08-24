@@ -19,17 +19,15 @@ class player(pg.sprite.Sprite):
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
     def controls(self):
         keys = pg.key.get_pressed()
-        if not keys:
-            self.vel_x, self.vel_y = 0,0
-        else:
-            if keys[pg.K_LEFT] or keys[pg.K_a]:
-                self.vel_x = p_speed * -1
-            elif keys[pg.K_RIGHT] or keys[pg.K_d]:
-                self.vel_x = p_speed 
-            elif keys[pg.K_UP] or keys[pg.K_w]:
-                self.vel_y = p_speed * -1
-            elif keys[pg.K_DOWN] or keys[pg.K_s]:
-                self.vel_y = p_speed 
+        self.vel_x, self.vel_y = 0,0
+        if keys[pg.K_LEFT] or keys[pg.K_a]:
+            self.vel_x = p_speed * -1
+        elif keys[pg.K_RIGHT] or keys[pg.K_d]:
+            self.vel_x = p_speed 
+        elif keys[pg.K_UP] or keys[pg.K_w]:
+            self.vel_y = p_speed * -1
+        elif keys[pg.K_DOWN] or keys[pg.K_s]:
+            self.vel_y = p_speed 
             
 
     def move(self, del_x=0, del_y=0):

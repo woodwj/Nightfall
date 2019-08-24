@@ -17,7 +17,7 @@ s_gridWidth = s_screenWidth/s_tileSize
 s_gridHeight = s_screenHeight/s_tileSize
 
 # player settings
-p_speed = 100
+p_speed = 250
 
 
 
