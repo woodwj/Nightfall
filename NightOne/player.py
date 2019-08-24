@@ -10,11 +10,27 @@ class player(pg.sprite.Sprite):
         # for faster coding save to local variable and acess in other class functions
         self.gameScene = gameScene
         # create the square on the surface
-        self.image = pg.Surface((tileSize, tileSize))
+        self.image = pg.Surface((s_tileSize, s_tileSize))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.pos_x = tile_x
-        self.pos_y = tile_y
+        self.pos_x, self.pos_y = tile_x, tile_y
+        self.vel_x, self.vel_y = 0,0
+    
+    # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
+    def controls(self):
+        keys = pg.key.get_pressed()
+        if not keys:
+            self.vel_x, self.vel_y = 0,0
+        else:
+            if keys[pg.K_LEFT] or keys[pg.K_a]:
+                self.vel_x = p_speed * -1
+            elif keys[pg.K_RIGHT] or keys[pg.K_d]:
+                self.vel_x = p_speed 
+            elif keys[pg.K_UP] or keys[pg.K_w]:
+                self.vel_y = p_speed * -1
+            elif keys[pg.K_DOWN] or keys[pg.K_s]:
+                self.vel_y = p_speed 
+            
 
     def move(self, del_x=0, del_y=0):
         if not self.wallCollide(del_x, del_y):
@@ -29,5 +45,7 @@ class player(pg.sprite.Sprite):
 
 
     def update(self):
-        self.rect.x = self.pos_x * tileSize
-        self.rect.y = self.pos_y * tileSize
+        self.controls()
+        self.pos_x += self.vel_x * self.gameScene.del_t
+        self.pos_y += self.vel_y * self.gameScene.del_t
+        self.rect.topleft = (self.pos_x, self.pos_y)

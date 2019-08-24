@@ -8,14 +8,16 @@ BLACK = (0,0,0)
 bgColour = BLACK
 
 # Screen Settings
-screenWidth = 1980
-screenHeight = 1080
-FPS = 60
-title = "NightOne"
-tileSize = 32
-gridWidth = screenWidth/tileSize
-gridHeight = screenHeight/tileSize
+s_screenWidth = 1980
+s_screenHeight = 1080
+s_FPS = 60
+s_title = "NightOne"
+s_tileSize = 32
+s_gridWidth = s_screenWidth/s_tileSize
+s_gridHeight = s_screenHeight/s_tileSize
 
+# player settings
+p_speed = 100
 
 
 

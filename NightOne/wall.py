@@ -9,9 +9,9 @@ class wall(pg.sprite.Sprite):
             pg.sprite.Sprite.__init__(self, self.groups)
             # for faster coding save to local variable and acess in other class functions
             self._gameScene = gameScene
-            self.image = pg.Surface((tileSize, tileSize))
+            self.image = pg.Surface((s_tileSize, s_tileSize))
             self.image.fill(BLUE)
             self.rect = self.image.get_rect()
             self.x , self.y = tile_x, tile_y
-            self.rect.x = self.x * tileSize
-            self.rect.y = self.y * tileSize
+            self.rect.x = self.x * s_tileSize
+            self.rect.y = self.y * s_tileSize
