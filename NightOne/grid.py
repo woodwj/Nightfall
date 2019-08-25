@@ -37,14 +37,13 @@ class camera:
         self.gameState = gameState
         self.camera = pg.Rect(0, 0, width, height)
         self.cSpeed = c_speed
-        self.cmoveWidth = c_moveWidth
-        self.cmoveHeight = c_moveHeight
         self.width = width
         self.height = height
         self.del_x , self.del_y = 0,0
         self.vel_x , self.vel_y = 0,0
         self.dist_x, self.dist_y = 0,0
         self.x, self.y = 0,0
+        self.balenced_x, self.balenced_y = True, True
         
         
         
@@ -56,30 +55,59 @@ class camera:
     def update(self, target):
         
         # takes the cam position and calculates the distance between the rect and the camera x and y
-        self.del_x , self.del_y = 0,0
         self.cam_x = -self.x + int(self.gameState.screenWidth / 2)
         self.cam_y = -self.y + int(self.gameState.screenHeight / 2)
-        self.dist_x, self.dist_y = self.cam_x - target.rect.x, self.cam_y - target.rect.y
+        self.dist_x, self.dist_y = self.cam_x - target.rect.centerx, self.cam_y - target.rect.centery
         
+        self.targetPos_x = target.rect.centerx + self.x
+        self.targetPos_y = target.rect.centery + self.y
+
+        # screen position for player
+        if self.x < 0:
+            target.screenPos_x = self.targetPos_x
+        else:
+            target.screenPos_x = target.rect.centerx
+        if self.y < 0:
+            target.screenPos_y = self.targetPos_y
+        else:
+            target.screenPos_y = target.rect.centery
+
         # internal movement
+        if self.balenced_x :
+            self.cmoveWidth = c_boundryWidth
+        else:
+            self.cmoveWidth = c_returnWidth
+        if self.balenced_y:
+            self.cmoveHeight = c_boundryHeight
+        else:
+            self.cmoveHeight = c_returnHeight
+
         # right
         if self.dist_x > self.cmoveWidth:
+            self.balenced_x = False
             self.vel_x += self.cSpeed
         # left
         elif self.dist_x < -1*self.cmoveWidth:
+            self.balenced_x = False
             self.vel_x -= self.cSpeed
+        else:
+            self.balenced_x = True
         # down
         if self.dist_y > self.cmoveHeight:
+            self.balenced_y = False
             self.vel_y += self.cSpeed
         # up
         elif self.dist_y < -1*self.cmoveHeight:
+            self.balenced_y = False
             self.vel_y -= self.cSpeed
+        else:
+            self.balenced_y = True
+
 
         # adjust vel then position
         self.vel_x, self.vel_y = utils.mult2by1(self.vel_x, self.vel_y, self.gameState.del_t)
         self.x, self.y = self.x + self.vel_x, self.y + self.vel_y
-        
-        print(self.x, target.rect.x, self.dist_x)
+
         #limit scrolling to map size
         # left
         self.x = min(0, self.x)

@@ -34,7 +34,7 @@ class gameScene:
                     wall.wall(self, collumIndex, rowIndex)
                 # player mapping
                 if tile == 'P':
-                    self.objects.player = player.player(self, self.objects, collumIndex, rowIndex)
+                    self.objects.player = player.player(self, collumIndex, rowIndex)
 
     # deals with relevent game level events for quit/pause ect - called every game loop
     def events(self):
@@ -47,11 +47,13 @@ class gameScene:
     
     # draws sprites to the screen and adjusts to the camera - called every game loop
     def draw(self):
+        pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.state.screen.fill(bgColour)
         self.map.draw_Grid()
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
-            self.state.screen.blit(sprite.image, self.camera.apply(sprite))
+            self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
+ 
         pg.display.flip()
         
     # calls update of all sprites and camera to its follow target - called every game loop    
@@ -83,7 +85,7 @@ class gameState:
         self.halfHeight = int( 0.5* self.screenHeight )
         self.size = (self.screenWidth,self.screenHeight)
         # will eventually be fullscreen, but for debugging will use windowed
-        #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        # self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
         self.screen = pg.display.set_mode(self.size)
 
 # instatiate
