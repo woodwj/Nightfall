@@ -17,10 +17,10 @@ s_gridWidth = int(s_screenWidth/s_tileSize)
 s_gridHeight = int(s_screenHeight/s_tileSize)
 
 # player settings
-p_speed = 250
+p_speed = 300
 
 #camera settings
-c_speed = 200
+c_speed = 300
 c_moveWidth = 300
 c_moveHeight = 250
 

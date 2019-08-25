@@ -1,6 +1,7 @@
 from settings import *
 import pygame as pg
 
+# wall class - immobile
 class wall(pg.sprite.Sprite):
         def __init__(self, gameScene, tile_x, tile_y):
             # want walls in all group and wall group

@@ -20,7 +20,7 @@ class player(pg.sprite.Sprite):
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
     def controls(self):
-        
+        # velocity in both axis set to 0
         self.vel_x, self.vel_y = 0,0
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
@@ -31,11 +31,12 @@ class player(pg.sprite.Sprite):
             self.vel_y = p_speed * -1
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel_y = p_speed
-        # code to fix the diagonal speed problem    
+        
+        # code to adjust diagonal speed - diagram to show pythag    
         if self.vel_y !=0 and self.vel_x !=0:
             self.vel_x, self.vel_y = utils.mult2by1(self.vel_x, self.vel_y, 0.7071)
             
-
+    # move function to add to x and y, the change in x and y plus check collision on both axis
     def move(self, del_x, del_y):
         self.pos_x , self.pos_y = self.pos_x + del_x , self.pos_y + del_y
         self.rect.x = self.pos_x
@@ -43,29 +44,39 @@ class player(pg.sprite.Sprite):
         self.rect.y = self.pos_y
         self.collide_with_walls('y')
 
+    # collision checker for both axis
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.gameObjects.groupWalls, False)
             if hits:
+                # right -> left
                 if self.vel_x > 0:
                     self.pos_x = hits[0].rect.left - self.rect.width
+                # left -> right
                 if self.vel_x < 0:
                     self.pos_x = hits[0].rect.right
+                # fix velocity and rect
                 self.vel_x = 0
                 self.rect.x = self.pos_x
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.gameObjects.groupWalls, False)
             if hits:
+                # up - > down
                 if self.vel_y > 0:
                     self.pos_y = hits[0].rect.top - self.rect.height
+                # down -> up
                 if self.vel_y < 0:
                     self.pos_y = hits[0].rect.bottom
+                # adjust velocity and rect
                 self.vel_y = 0
                 self.rect.y = self.pos_y
 
-
+    # player update funciton - called every gameloop
     def update(self):
+        # check controls
         self.controls()
+        # chane in x and y is calculated off velocity and the change in time
         self.del_x, self.del_y = utils.mult2by1(self.vel_x, self.vel_y, self.gameScene.state.del_t)
+        # performs movement
         self.move(self.del_x, self.del_y)
         
