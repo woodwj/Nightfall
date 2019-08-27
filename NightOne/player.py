@@ -19,11 +19,10 @@ class player(pg.sprite.Sprite):
         self.weapon = p_weapon
 
         self.animator = animations.animator("player")
-        self.animator.newAction(p_weapon, p_action)
-        self.img = self.animator.animList[0]
-        self.image = pg.image.load(self.img).convert_alpha()
+        self.animator.newAction(p_action, p_weapon)
+        self.imgFile = self.animator.animList[0]
+        self.image = pg.image.load(self.imgFile).convert_alpha()
         self.image = pg.transform.scale( self.image, (self.gameScene.state.tileSize * 2,self.gameScene.state.tileSize *2))
-        self.rect = self.image.get_rect()
         self.rect = self.image.get_rect()
         self.originalImage = self.image
 
@@ -99,15 +98,6 @@ class player(pg.sprite.Sprite):
     
     def col_hitrect(self, sprite1,sprite2):
         return sprite1.col_rect.colliderect(sprite2.rect)
-
-    #def rotate(self):
-        #mouse_x, mouse_y = pg.mouse.get_pos()
-        #self.rel.x, self.rel.y = mouse_x - self.pos.x, mouse_y - self.pos.y
-        #self.rot = ((180 / math.pi) * -math.atan2(self.rel.y, self.rel.x)) * self.gameScene.state.del_t
-        #self.rot = (self.rot + self.rot_speed  * )
-        #self.image = pg.transform.rotate(self.origionalimage, self.rot)
-        #self.rect = self.image.get_rect()
-        #self.rect.center = (self.pos.x,self.pos.y)
 
     # player update funciton - called every gameloop
     def update(self):
