@@ -12,6 +12,8 @@ bgColour = BLACK
 # Screen Settings
 s_screenWidth = 1920
 s_screenHeight = 1080
+s_halfWidth = int(s_screenWidth * 0.5)
+s_halfHeight = int(s_screenHeight * 0.5)
 s_FPS = 120
 s_title = "NightOne"
 s_tileSize = 48
@@ -25,12 +27,19 @@ p_image = "survivor-move_handgun_0.png"
 p_weapon = "handgun"
 p_action = "move"
 
+# zombie settings
+z_collisionRect = pg.Rect(0, 0, int(s_tileSize*1.5), int(s_tileSize*1.5))
+
+
 #camera settings
 c_speed = 400
 c_boundryWidth = int(s_screenWidth/4)
 c_boundryHeight = int(s_screenHeight/4)
 c_returnWidth = 0
 c_returnHeight = 0
+
+#lighting settings
+l_scanRange = pg.Rect(0, 0, s_halfWidth,s_halfHeight)
 
 
 
