@@ -19,6 +19,7 @@ class gameScene:
         self.objects = gameObjects()
         self.initScene()
         
+        
     # an init Scene to reset/start scene in a new map zone ect    
     def initScene(self):
         
@@ -38,7 +39,6 @@ class gameScene:
                 # zombie mapping
                 if tile == "z":
                     zombie.zombie(self, collumIndex, rowIndex)
-
     # deals with relevent game level events for quit/pause ect - called every game loop
     def events(self):
         for event in pg.event.get():
@@ -52,14 +52,12 @@ class gameScene:
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.state.screen.fill(bgColour)
-        #self.map.draw_Grid()
+        self.map.draw_Grid()
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
             self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
         #pg.draw.rect(self.state.screen, RED, self.objects.player.rect, 2)
         pg.display.flip()
-        for intersect in self.objects.player.lighting.intersects:
-            pg.draw.aaline(self.state.screen, RED, self.objects.player.rect.center, (intersect['x'], intersect['y']))
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
@@ -97,6 +95,7 @@ class gameState:
 # instatiate
 Game = gameScene()
 
+
 # Mainloop
 while not Game.gameLoop:
     Game.state.del_t = Game.clock.tick(Game.state.FPS) / 1000
@@ -104,5 +103,7 @@ while not Game.gameLoop:
     Game.update()
     Game.draw()
     
+
+
 # Close the window and quit.
 pg.quit()

@@ -16,9 +16,3 @@ class wall(pg.sprite.Sprite):
             self.pos_x , self.pos_y = tile_x, tile_y
             self.rect.x = self.pos_x * self.gameScene.state.tileSize
             self.rect.y = self.pos_y * self.gameScene.state.tileSize
-            self.segments = [
-                {"a": {"x": self.rect.left,"y": self.rect.top} ,"b":{"x": self.rect.right,"y": self.rect.top}},
-                {"a": {"x": self.rect.left,"y": self.rect.top}, "b":{"x": self.rect.left,"y": self.rect.bottom}},
-                {"a": {"x": self.rect.left,"y": self.rect.bottom}, "b": {"x": self.rect.right,"y": self.rect.bottom}},
-                {"a": {"x": self.rect.right,"y": self.rect.bottom}, "b": {"x": self.rect.right,"y": self.rect.top}}
-                ]

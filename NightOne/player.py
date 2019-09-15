@@ -3,7 +3,6 @@ import utils
 import math
 import pathlib
 import animations
-import lighting
 from settings import *
 
 vec = pg.math.Vector2
@@ -23,7 +22,7 @@ class player(pg.sprite.Sprite):
         self.animator.newAction(p_action, p_weapon)
         self.imgFile = self.animator.animList[0]
         self.image = pg.image.load(self.imgFile).convert_alpha()
-        self.image = pg.transform.scale(self.image, (self.gameScene.state.tileSize * 2,self.gameScene.state.tileSize *2))
+        self.image = pg.transform.scale( self.image, (self.gameScene.state.tileSize * 2,self.gameScene.state.tileSize *2))
         self.rect = self.image.get_rect()
         self.originalImage = self.image
 
@@ -33,16 +32,6 @@ class player(pg.sprite.Sprite):
         self.pos = vec(tile_x,tile_y)*self.gameScene.state.tileSize
         self.rot = 0
         self.screenPos_x, self.screenPos_y = 0,0
-
-        self.segments = [
-                {"a": {"x": self.col_rect.left,"y": self.col_rect.top} ,"b":{"x": self.col_rect.right,"y": self.col_rect.top}},
-                {"a": {"x": self.col_rect.left,"y": self.col_rect.top}, "b":{"x": self.col_rect.left,"y": self.col_rect.bottom}},
-                {"a": {"x": self.col_rect.left,"y": self.col_rect.bottom}, "b": {"x": self.col_rect.right,"y": self.col_rect.bottom}},
-                {"a": {"x": self.col_rect.right,"y": self.col_rect.bottom}, "b": {"x": self.col_rect.right,"y": self.col_rect.top}}
-                ]
-
-        self.lighting = lighting.lightSource(self, "dynamic")
-        self.lighting.update()
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
     def controls(self):
@@ -72,7 +61,6 @@ class player(pg.sprite.Sprite):
         self.col_rect.centery = self.pos.y
         self.collide_with_walls('y')
         self.rect.center = self.col_rect.center
-        self.lighting.update()
     
     def rotate(self):
         mouse_x, mouse_y = pg.mouse.get_pos()
@@ -120,9 +108,6 @@ class player(pg.sprite.Sprite):
         self.rel = self.vel * self.gameScene.state.del_t
         # performs movement
         self.move()
-        self.lighting.update()
-        for intersect in self.lighting.intersects:
-            pg.draw.aaline(self.gameScene.state.screen, (255, 85, 85), self.rect.center, (intersect['x'], intersect['y']))
 
         
         

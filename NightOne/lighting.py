@@ -8,19 +8,25 @@ import utils
 # that is not parralel
 
 
-class lightSource():
+class lightSource(pg.sprite.Sprite):
     def __init__(self, source, mType = "static", strength = 300):
+        self.groups = source.gameScene.objects.groupLighting , source.gameScene.objects.groupAll
+        pg.sprite.Sprite.__init__(self, self.groups)
         # init some functions
+        self.type = "light"
         self.strength = strength
         self.range = self.strength * 2
         self.scanRect = l_scanRange
         self.scanRect.center = source.rect.center
-        self.type = mType
+        self.lightingType = mType
         self.source = source
         self.points = []
         self.scanSegments = []
         self.angles = []
         self.intersects = []
+        self.image = pg.Surface([self.strength, self.strength])
+        self.rect = self.image.get_rect()
+
 
     def get_intersection(self, ray, segment):
         ''' Find intersection of RAY & SEGMENT '''
@@ -68,18 +74,24 @@ class lightSource():
                 "y": r_py+r_dy*T1,
                 "param": T1
         }
+    
+
 
     def update(self):
-        
+        self.rect.centerx = self.source.rect.centerx
+        self.rect.centery = self.source.rect.centery
+
         # clean points from segments
         self.points = []
+
        
         for sprite in self.source.gameScene.objects.groupAll.sprites():
-            if self.scanRect.contains(sprite.rect):
-                for segment in sprite.segments:
-                    if segment not in self.scanSegments:
-                        self.scanSegments.append(segment)
-                        self.points.append((segment['a'], segment['b']))
+            if sprite.type != "light":
+                if self.scanRect.contains(sprite.rect):
+                    for segment in sprite.segments:
+                        if segment not in self.scanSegments:
+                            self.scanSegments.append(segment)
+                            self.points.append((segment['a'], segment['b']))
         
         #for segment in self.scanSegments:
             #self.points.append((segment[0]['a'], segment['b']))
@@ -125,4 +137,8 @@ class lightSource():
 
         # Sort intersects by angle
         self.intersects = sorted(self.intersects, key=lambda k: k['angle'])
-        return self.intersects
+
+    def renderLight(self, screen):
+        
+        for intersect in self.lighting.intersects:
+            pg.draw.aaline(self.image, RED, self.source.rect.center, (intersect['x'], intersect['y']))
