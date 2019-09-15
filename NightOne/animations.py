@@ -6,7 +6,7 @@ from pathlib import Path
 class animator():
     def __init__(self, actortype):
         
-        self.baseFolder = pathlib.Path.cwd()
+        self.baseFolder = pathlib.Path.cwd() / "NightOne"
         self.actorFolder = self.baseFolder / "art" / actortype
         
     def newAction(self, weapon, action ,speed = 1):

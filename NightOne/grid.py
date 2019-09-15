@@ -9,8 +9,8 @@ class mapManager():
     def __init__(self, gameState, directory = "start.txt"):
         self.gameState = gameState
         # using pathlib to standarise directories
-        baseFolder = pathlib.Path.cwd()
-        mapDir = baseFolder / "maps" / directory
+        baseFolder = pathlib.Path.cwd() / "NightOne"
+        mapDir = baseFolder  / "maps" / directory
         self.data = []
         with mapDir.open() as f:
             for line in f:
