@@ -4,20 +4,15 @@ from pathlib import Path
 
 
 class animator():
-    def __init__(self, actorType):
+    def __init__(self, actortype):
         
-        self.actorType = actorType
         self.baseFolder = pathlib.Path.cwd()
-        self.actorFolder = self.baseFolder / "art" / self.actorType
+        self.actorFolder = self.baseFolder / "art" / actortype
         
-    def newAction(self, action, weapon = None):
+    def newAction(self, weapon, action ,speed = 1):
         self.animList = []
         
-        if self.actorType == "player":
-            actionFolder = Path(self.actorFolder / weapon / action)
-        else:
-            actionFolder = Path(self.actorFolder / action)
-
+        actionFolder = Path(self.actorFolder / weapon / action)
         for path in actionFolder.iterdir():
             # because path is object not string
             self.animList.append(str(path))

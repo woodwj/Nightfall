@@ -2,7 +2,6 @@ import pygame as pg
 import player
 import grid
 import wall
-import zombie
 
 import pathlib
 # * import makes varibles exist in main - use varName rather than settings.varName
@@ -36,9 +35,7 @@ class gameScene:
                 # player mapping
                 if tile == 'P':
                     self.objects.player = player.player(self, collumIndex, rowIndex)
-                # zombie mapping
-                if tile == "z":
-                    zombie.zombie(self, collumIndex, rowIndex)
+
     # deals with relevent game level events for quit/pause ect - called every game loop
     def events(self):
         for event in pg.event.get():
@@ -56,7 +53,7 @@ class gameScene:
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
             self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
-        #pg.draw.rect(self.state.screen, RED, self.objects.player.rect, 2)
+ 
         pg.display.flip()
         
     # calls update of all sprites and camera to its follow target - called every game loop    
@@ -70,7 +67,6 @@ class gameObjects:
         # creates or clear the sprite groups
         self.groupAll = pg.sprite.Group()
         self.groupWalls = pg.sprite.Group()
-        self.groupZombies = pg.sprite.Group()
 
 # class for setting config
 class gameState:
