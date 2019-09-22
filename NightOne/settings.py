@@ -25,12 +25,18 @@ p_image = "survivor-move_handgun_0.png"
 p_weapon = "handgun"
 p_action = "move"
 
+# zombie settings
+z_speed = 100
+z_collisionRect = pg.Rect(0, 0, int(s_tileSize*1.5), int(s_tileSize*1.5))
+
 #camera settings
 c_speed = 400
 c_boundryWidth = int(s_screenWidth/4)
 c_boundryHeight = int(s_screenHeight/4)
 c_returnWidth = 0
 c_returnHeight = 0
+
+
 
 
 

@@ -26,7 +26,6 @@ class player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.originalImage = self.image
 
-
         self.col_rect = p_collisionRect
         self.vel = vec(0,0)
         self.pos = vec(tile_x,tile_y)*self.gameScene.state.tileSize
@@ -50,7 +49,7 @@ class player(pg.sprite.Sprite):
         
         # code to adjust diagonal speed - diagram to show pythag    
         if self.vel.y !=0 and self.vel.x !=0:
-            self.vel.x, self.vel.y = utils.mult2by1(self.vel.x, self.vel.y, 0.7071)
+            self.vel *= 0.7071
 
             
     # move function to add to x and y, the change in x and y plus check collision on both axis
