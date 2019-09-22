@@ -21,7 +21,7 @@ class zombie(pg.sprite.Sprite):
         self.pos = vec(tile_x, tile_y) * self.gameScene.state.tileSize
         self.vel = vec(0,0)
         self.rect.center = self.pos
-        self.col_rect = z_collisionRect
+        self.col_rect = z_collisionRect.copy()
 
     def collide_with_walls(self, dir):
         if dir == 'x':
