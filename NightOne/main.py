@@ -56,8 +56,7 @@ class gameScene:
         self.map.draw_Grid()
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
-            self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
-        #pg.draw.rect(self.state.screen, RED, self.objects.player.col_rect, 2)
+            self.state.screen.blit(sprite.image, self.camera.apply(sprite))
         pg.display.flip()
         
     # calls update of all sprites and camera to its follow target - called every game loop    

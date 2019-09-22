@@ -32,7 +32,7 @@ class zombie(pg.sprite.Sprite):
                     self.pos.x = hits[0].rect.left - int(self.col_rect.width / 2)
                 # left -> right
                 if self.vel.x < 0:
-                    self.pos.x = hits[0].rect.right + int(self.col_rect.width / 2.0)
+                    self.pos.x = hits[0].rect.right + int(self.col_rect.width / 2)
                 # fix velocity and rect
                 self.vel.x = 0
                 self.col_rect.centerx = self.pos.x
@@ -41,14 +41,18 @@ class zombie(pg.sprite.Sprite):
             if hits:
                 # up - > down
                 if self.vel.y > 0:
-                    self.pos.y = hits[0].rect.top - int(self.col_rect.height / 2.0)
+                    self.pos.y = hits[0].rect.top - int(self.col_rect.height / 2)
                 # down -> up
                 if self.vel.y < 0:
-                    self.pos.y = hits[0].rect.bottom + int(self.col_rect.height / 2.0)
-                # adjust velocity and rect
+                    self.pos.y = hits[0].rect.bottom + int(self.col_rect.height / 2)
+                # fix velocity and rect
                 self.vel.y = 0
                 self.col_rect.centery = self.pos.y
+   
 
+    def col_hitrect(self, sprite1,sprite2):
+        return sprite1.col_rect.colliderect(sprite2.rect)
+    
 
     def rotate(self):
         self.rot = (self.gameScene.objects.player.pos - self.pos).angle_to(vec(1, 0))
@@ -59,14 +63,14 @@ class zombie(pg.sprite.Sprite):
     def chase(self):
         self.vel = vec(0,0)
         if self.rect.x < self.gameScene.objects.player.pos.x:
-            self.vel.x += z_speed
+            self.vel.x = z_speed
         elif self.rect.x > self.gameScene.objects.player.pos.x:
-            self.vel.x -= z_speed
+            self.vel.x = z_speed * -1
 
         if self.rect.y < self.gameScene.objects.player.pos.y:
-            self.vel.y += z_speed
+            self.vel.y = z_speed
         elif self.rect.y > self.gameScene.objects.player.pos.y:
-            self.vel.y -= z_speed
+            self.vel.y = z_speed * -1
         
         if self.vel.y !=0 and self.vel.x !=0:
             self.vel *= 0.7071
@@ -74,7 +78,11 @@ class zombie(pg.sprite.Sprite):
         
     def move(self):
         self.pos += self.rel
-        self.rect.center = self.pos
+        self.col_rect.centerx = self.pos.x
+        self.collide_with_walls('x')
+        self.col_rect.centery = self.pos.y
+        self.collide_with_walls('y')
+        self.rect.center = self.col_rect.center
 
     def update(self):
         self.rotate()
