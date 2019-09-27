@@ -71,7 +71,7 @@ class player(pg.sprite.Sprite):
     # collision checker for both axis
     def collide_with_walls(self, dir):
         if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, self.col_hitrect)
+            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, utils.collideDetect)
             if hits:
                 # right -> left
                 if self.vel.x > 0:
@@ -83,7 +83,7 @@ class player(pg.sprite.Sprite):
                 self.vel.x = 0
                 self.col_rect.centerx = self.pos.x
         if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, self.col_hitrect)
+            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, utils.collideDetect)
             if hits:
                 # up - > down
                 if self.vel.y > 0:
@@ -95,9 +95,6 @@ class player(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.col_rect.centery = self.pos.y
     
-    def col_hitrect(self, sprite1,sprite2):
-        return sprite1.col_rect.colliderect(sprite2.rect)
-
     # player update funciton - called every gameloop
     def update(self):
         self.rotate()

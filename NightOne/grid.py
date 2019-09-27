@@ -45,8 +45,6 @@ class camera:
         self.x, self.y = 0,0
         self.balenced_x, self.balenced_y = True, True
         
-        
-        
     # applies the camera to a target    
     def apply(self, target):
         return target.rect.move(self.camera.topleft)

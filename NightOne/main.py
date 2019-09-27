@@ -19,16 +19,15 @@ class gameScene:
         self.objects = gameObjects()
         self.initScene()
         
-        
     # an init Scene to reset/start scene in a new map zone ect    
     def initScene(self):
         
-        # re/created map and camera objects
-        self.map = grid.mapManager(self.state)
-        self.camera = grid.camera(self.state, self.map.width, self.map.height)
+        # re/created map and camera objects 
+        self.objects.map = grid.mapManager(self.state)
+        self.objects.camera = grid.camera(self.state, self.objects.map.width, self.objects.map.height)
 
         # loop to create sprites from parsed map files
-        for rowIndex, tiles in enumerate(self.map.data):
+        for rowIndex, tiles in enumerate(self.objects.map.data):
             for collumIndex, tile in enumerate(tiles):
                 # wall mapping
                 if tile == 'w':
@@ -53,16 +52,16 @@ class gameScene:
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.state.screen.fill(bgColour)
-        self.map.draw_Grid()
+        self.objects.map.draw_Grid()
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
-            self.state.screen.blit(sprite.image, self.camera.apply(sprite))
+            self.state.screen.blit(sprite.image, self.objects.camera.apply(sprite))
         pg.display.flip()
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
         self.objects.groupAll.update()
-        self.camera.update(self.objects.player)
+        self.objects.camera.update(self.objects.player)
 
 # class for object that exists in game
 class gameObjects:
@@ -82,15 +81,13 @@ class gameState:
         self.screenWidth = s_screenWidth
         self.screenHeight = s_screenHeight
         self.tileSize = s_tileSize
-        self.gridWidth = s_gridWidth
-        self.gridHeight = s_gridHeight
         self.FPS = s_FPS
         self.halfWidth = int( 0.5* self.screenWidth )
         self.halfHeight = int( 0.5* self.screenHeight )
         self.size = (self.screenWidth,self.screenHeight)
         # will eventually be fullscreen, but for debugging will use windowed
-        # self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
-        self.screen = pg.display.set_mode(self.size)
+        self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        #self.screen = pg.display.set_mode(self.size)
 
 # instatiate
 Game = gameScene()

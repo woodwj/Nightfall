@@ -6,8 +6,9 @@ GREEN = (0,255,0)
 BLUE = (0,0,255)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+LGREY = (169,169,169)
 
-bgColour = BLACK
+bgColour = LGREY
 
 # Screen Settings
 s_screenWidth = 1920
@@ -15,8 +16,7 @@ s_screenHeight = 1080
 s_FPS = 120
 s_title = "NightOne"
 s_tileSize = 48
-s_gridWidth = int(s_screenWidth/s_tileSize)
-s_gridHeight = int(s_screenHeight/s_tileSize)
+
 
 # player settings
 p_speed = 300

@@ -1,5 +1,6 @@
 import pygame as pg
 import animations
+import utils
 from settings import *
 
 vec = pg.math.Vector2
@@ -25,7 +26,7 @@ class zombie(pg.sprite.Sprite):
 
     def collide_with_walls(self, dir):
         if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, self.col_hitrect)
+            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, utils.collideDetect)
             if hits:
                 # right -> left
                 if self.vel.x > 0:
@@ -37,7 +38,7 @@ class zombie(pg.sprite.Sprite):
                 self.vel.x = 0
                 self.col_rect.centerx = self.pos.x
         if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, self.col_hitrect)
+            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, utils.collideDetect)
             if hits:
                 # up - > down
                 if self.vel.y > 0:
@@ -49,11 +50,6 @@ class zombie(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.col_rect.centery = self.pos.y
    
-
-    def col_hitrect(self, sprite1,sprite2):
-        return sprite1.col_rect.colliderect(sprite2.rect)
-    
-
     def rotate(self):
         self.rot = (self.gameScene.objects.player.pos - self.pos).angle_to(vec(1, 0))
         self.image = pg.transform.rotate(self.ogImage, self.rot)
