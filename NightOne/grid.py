@@ -62,13 +62,13 @@ class camera:
 
         # screen position for player
         if self.x < 0:
-            target.screenPos_x = self.targetPos_x
+            target.screenPos.x = self.targetPos_x
         else:
-            target.screenPos_x = target.rect.centerx
+            target.screenPos.x = target.rect.centerx
         if self.y < 0:
-            target.screenPos_y = self.targetPos_y
+            target.screenPos.y = self.targetPos_y
         else:
-            target.screenPos_y = target.rect.centery
+            target.screenPos.y = target.rect.centery
 
         # internal movement
         if self.balenced_x :
@@ -101,7 +101,6 @@ class camera:
         else:
             self.balenced_y = True
 
-
         # adjust vel then position
         self.vel_x, self.vel_y = utils.mult2by1(self.vel_x, self.vel_y, self.gameState.del_t)
         self.x, self.y = self.x + self.vel_x, self.y + self.vel_y
@@ -117,5 +116,3 @@ class camera:
         self.y = max(-(self.height - self.gameState.screenHeight), self.y)
         # change the camerea rect  
         self.camera = pg.Rect(self.x, self.y, self.width, self.height)
-
-        

@@ -21,16 +21,22 @@ s_tileSize = 48
 s_gridWidth = int(s_screenWidth/s_tileSize)
 s_gridHeight = int(s_screenHeight/s_tileSize)
 
+# sprite settings
+sp_scale = 2
+sp_colratio = 0.75
+sp_colScale = sp_colratio * sp_scale
+
+
 # player settings
 p_speed = 300
-p_collisionRect = pg.Rect(0, 0, int(s_tileSize*1.5), int(s_tileSize*1.5))
+p_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
 p_image = "survivor-move_handgun_0.png"
 p_weapon = "handgun"
 p_action = "move"
 
 # zombie settings
-z_collisionRect = pg.Rect(0, 0, int(s_tileSize*1.5), int(s_tileSize*1.5))
-z_speed = 200
+z_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
+z_speed = 100
 z_action = "idle"
 
 #camera settings
