@@ -1,13 +1,14 @@
 import pygame as pg
-import player
+import actors
 import grid
-import wall
+import tiletemplate
 import zombie
 
 import pathlib
 # * import makes varibles exist in main - use varName rather than settings.varName
 from settings import *
 pg.init()
+vec = pg.math.Vector2
 
 # master class that hold the game objects and settings
 class gameScene:
@@ -18,7 +19,7 @@ class gameScene:
         self.state = gameState()
         self.objects = gameObjects()
         self.initScene()
-        
+
     # an init Scene to reset/start scene in a new map zone ect    
     def initScene(self):
         
@@ -31,13 +32,13 @@ class gameScene:
             for collumIndex, tile in enumerate(tiles):
                 # wall mapping
                 if tile == 'w':
-                    wall.wall(self, collumIndex, rowIndex)
+                    tiletemplate.wall(self, collumIndex, rowIndex)
                 # player mapping
                 if tile == 'P':
-                    self.objects.player = player.player(self, collumIndex, rowIndex)
+                    self.objects.player = actors.player(self, collumIndex, rowIndex)
                 # zombie mapping
                 if tile == "z":
-                    zombie.zombie(self, collumIndex, rowIndex)
+                    actors.zombie(self, collumIndex, rowIndex)
 
     # deals with relevent game level events for quit/pause ect - called every game loop
     def events(self):
@@ -50,23 +51,28 @@ class gameScene:
     
     # draws sprites to the screen and adjusts to the camera - called every game loop
     def draw(self):
-        pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
+        pg.display.set_caption(self.state.title)
         self.state.screen.fill(bgColour)
         #self.map.draw_Grid()
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
+<<<<<<< Updated upstream
             self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
         #pg.draw.rect(self.state.screen, RED, self.objects.player.rect, 2)
         pg.display.flip()
         for intersect in self.objects.player.lighting.intersects:
             pg.draw.aaline(self.state.screen, RED, self.objects.player.rect.center, (intersect['x'], intersect['y']))
+=======
+            self.state.screen.blit(sprite.image, self.objects.camera.apply(sprite))
+        pg.display.flip()   
+>>>>>>> Stashed changes
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
         self.objects.groupAll.update()
         self.camera.update(self.objects.player)
 
-# class for object that exists in game
+# class for objects that exists in game
 class gameObjects:
     def __init__(self):
         # creates or clear the sprite groups
@@ -78,9 +84,8 @@ class gameObjects:
 class gameState:
     def __init__(self):
         self.del_t = 0
-        # setting.py file holds screen data - stored here
         pg.display.set_caption(s_title)
-        #pg.key.set_repeat(500, 100)
+        pg.key.set_repeat(500, 100)
         self.screenWidth = s_screenWidth
         self.screenHeight = s_screenHeight
         self.tileSize = s_tileSize
@@ -90,8 +95,13 @@ class gameState:
         self.halfWidth = int( 0.5* self.screenWidth )
         self.halfHeight = int( 0.5* self.screenHeight )
         self.size = (self.screenWidth,self.screenHeight)
+        self.title = s_title
         # will eventually be fullscreen, but for debugging will use windowed
+<<<<<<< Updated upstream
         # self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+=======
+        #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+>>>>>>> Stashed changes
         self.screen = pg.display.set_mode(self.size)
 
 # instatiate
