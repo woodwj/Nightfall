@@ -6,8 +6,9 @@ GREEN = (0,255,0)
 BLUE = (0,0,255)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+GREY = (166,166,166)
 
-bgColour = BLACK
+bgColour = GREY
 
 # Screen Settings
 s_screenWidth = 1920
@@ -29,7 +30,8 @@ p_action = "move"
 
 # zombie settings
 z_collisionRect = pg.Rect(0, 0, int(s_tileSize*1.5), int(s_tileSize*1.5))
-
+z_speed = 200
+z_action = "idle"
 
 #camera settings
 c_speed = 400
@@ -37,11 +39,4 @@ c_boundryWidth = int(s_screenWidth/4)
 c_boundryHeight = int(s_screenHeight/4)
 c_returnWidth = 0
 c_returnHeight = 0
-
-#lighting settings
-l_scanRange = pg.Rect(0, 0, s_halfWidth,s_halfHeight)
-
-
-
-
 

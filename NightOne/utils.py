@@ -4,14 +4,13 @@ def mult2by1(in1,in2,multi, tag = ""):
     out2 = in2 * multi
     return int(out1), int(out2)
 
-<<<<<<< Updated upstream
 def cleanDuplicates(structure):
     clean = []
     for item in structure:
         if item not in clean:
             clean.append(item)
     return(clean)
-=======
+    
 # recursice algorithm to extract all values associated with a key in a multilevel dictionary
 def gen_dict_extract(key, var):
     if hasattr(var,'items'):
@@ -25,4 +24,3 @@ def gen_dict_extract(key, var):
                 for d in v:
                     for result in gen_dict_extract(key, d):
                         yield result
->>>>>>> Stashed changes

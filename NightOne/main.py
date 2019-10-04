@@ -1,8 +1,8 @@
 import pygame as pg
 import actors
 import grid
-import tiletemplate
-import zombie
+import tileSprite
+import environments
 
 import pathlib
 # * import makes varibles exist in main - use varName rather than settings.varName
@@ -32,7 +32,7 @@ class gameScene:
             for collumIndex, tile in enumerate(tiles):
                 # wall mapping
                 if tile == 'w':
-                    tiletemplate.wall(self, collumIndex, rowIndex)
+                    environments.wall(self, collumIndex, rowIndex)
                 # player mapping
                 if tile == 'P':
                     self.objects.player = actors.player(self, collumIndex, rowIndex)
@@ -53,19 +53,12 @@ class gameScene:
     def draw(self):
         pg.display.set_caption(self.state.title)
         self.state.screen.fill(bgColour)
-        #self.map.draw_Grid()
+        self.map.draw_Grid()
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
-<<<<<<< Updated upstream
             self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
         #pg.draw.rect(self.state.screen, RED, self.objects.player.rect, 2)
         pg.display.flip()
-        for intersect in self.objects.player.lighting.intersects:
-            pg.draw.aaline(self.state.screen, RED, self.objects.player.rect.center, (intersect['x'], intersect['y']))
-=======
-            self.state.screen.blit(sprite.image, self.objects.camera.apply(sprite))
-        pg.display.flip()   
->>>>>>> Stashed changes
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
@@ -97,11 +90,7 @@ class gameState:
         self.size = (self.screenWidth,self.screenHeight)
         self.title = s_title
         # will eventually be fullscreen, but for debugging will use windowed
-<<<<<<< Updated upstream
-        # self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
-=======
         #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
->>>>>>> Stashed changes
         self.screen = pg.display.set_mode(self.size)
 
 # instatiate

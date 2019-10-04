@@ -4,11 +4,11 @@ import math
 import pathlib
 import animations
 from settings import *
-import tiletemplate
+import tileSprite
 
 vec = pg.math.Vector2
 
-class player(tiletemplate.tileSprite):
+class player(tileSprite.tileSprite):
     def __init__(self, gameScene, tile_x, tile_y):
 
         # for faster coding save to local variable and acess in other class functions
@@ -32,7 +32,6 @@ class player(tiletemplate.tileSprite):
         self.col_rect = p_collisionRect
         self.vel = vec(0,0)
         self.pos = vec(tile_x,tile_y)*self.gameScene.state.tileSize
-        #self.rot = 0
         self.screenPos_x, self.screenPos_y = 0,0
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
@@ -75,7 +74,7 @@ class player(tiletemplate.tileSprite):
         self.move()
 
 
-class zombie(tiletemplate.tileSprite):
+class zombie(tileSprite.tileSprite):
     def __init__(self, gameScene, tile_x, tile_y):
 
         # for faster coding save to local variable and acess in other class functions

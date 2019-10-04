@@ -52,14 +52,3 @@ class tileSprite(pg.sprite.Sprite):
 
     def collideDetect(self,sprite1,sprite2):
         return sprite1.col_rect.colliderect(sprite2.rect) 
-
-
-
-# wall class - immobile
-class wall(tileSprite):
-        def __init__(self, gameScene, tile_x, tile_y):
-            # want walls in all group and wall group
-            self.groups = [gameScene.objects.groupAll, gameScene.objects.groupWalls]
-            # initilize the super with desired groups
-            super().__init__(gameScene, tile_x, tile_y, self.groups)
-            self.image.fill(GREEN)
