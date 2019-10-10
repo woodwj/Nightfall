@@ -4,6 +4,8 @@ import pathlib
 from pathlib import Path
 from settings import *
 
+vec = pg.math.Vector2
+
 # class for the map to draw grid while developing and decode files
 class mapManager():
     def __init__(self, gameState, directory = "start.txt"):
@@ -37,13 +39,11 @@ class camera:
         self.gameState = gameState
         self.camera = pg.Rect(0, 0, width, height)
         self.cSpeed = c_speed
-        self.width = width
-        self.height = height
-        self.del_x , self.del_y = 0,0
-        self.vel_x , self.vel_y = 0,0
-        self.dist_x, self.dist_y = 0,0
-        self.x, self.y = 0,0
-        self.balenced_x, self.balenced_y = True, True
+        self.mapWidth = width
+        self.mapHeight = height
+        self.offset = vec(0,0)
+        self.cam = vec(0,0)
+        
         
     # applies the camera to a target    
     def apply(self, target):
@@ -51,68 +51,23 @@ class camera:
 
     # updates the movement of the camera
     def update(self, target):
+
+        # set targets real position on the screen for target's use
+        self.offset = vec(self.camera.topleft)
+        targetPos_x = target.rect.x + self.offset.x
+        targetPos_y = target.rect.y + self.offset.y
+        # if there camera has moved then use the offset otherwise their own rect
+        target.screenPos.x = target.col_rect.x
+        if self.offset.x < 0:
+            target.screenPos.x = targetPos_x
+        target.screenPos.y = target.col_rect.y
+        if self.offset.y < 0:
+            target.screenPos.y = targetPos_y
         
-        # takes the cam position and calculates the distance between the rect and the camera x and y
-        self.cam_x = -self.x + int(self.gameState.screenWidth / 2)
-        self.cam_y = -self.y + int(self.gameState.screenHeight / 2)
-        self.dist_x, self.dist_y = self.cam_x - target.rect.centerx, self.cam_y - target.rect.centery
-        
-        self.targetPos_x = target.rect.centerx + self.x
-        self.targetPos_y = target.rect.centery + self.y
-
-        # screen position for player
-        if self.x < 0:
-            target.screenPos.x = self.targetPos_x
-        else:
-            target.screenPos.x = target.rect.centerx
-        if self.y < 0:
-            target.screenPos.y = self.targetPos_y
-        else:
-            target.screenPos.y = target.rect.centery
-
-        # internal movement
-        if self.balenced_x :
-            self.cmoveWidth = c_boundryWidth
-        else:
-            self.cmoveWidth = c_returnWidth
-        if self.balenced_y:
-            self.cmoveHeight = c_boundryHeight
-        else:
-            self.cmoveHeight = c_returnHeight
-
-        # right
-        if self.dist_x > self.cmoveWidth:
-            self.balenced_x = False
-            self.vel_x += self.cSpeed
-        # left
-        elif self.dist_x < -1*self.cmoveWidth:
-            self.balenced_x = False
-            self.vel_x -= self.cSpeed
-        else:
-            self.balenced_x = True
-        # down
-        if self.dist_y > self.cmoveHeight:
-            self.balenced_y = False
-            self.vel_y += self.cSpeed
-        # up
-        elif self.dist_y < -1*self.cmoveHeight:
-            self.balenced_y = False
-            self.vel_y -= self.cSpeed
-        else:
-            self.balenced_y = True
-
-        # adjust vel then position
-        self.vel_x, self.vel_y = utils.mult2by1(self.vel_x, self.vel_y, self.gameState.del_t)
-        self.x, self.y = self.x + self.vel_x, self.y + self.vel_y
-
-        #limit scrolling to map size
-        # left
-        self.x = min(0, self.x)
-        # top
-        self.y = min(0, self.y)  
-        # right
-        self.x = max(-(self.width - self.gameState.screenWidth), self.x)
-        # bottom  
-        self.y = max(-(self.height - self.gameState.screenHeight), self.y)
-        # change the camerea rect  
-        self.camera = pg.Rect(self.x, self.y, self.width, self.height)
+        # x and y are the 
+        x = -target.rect.centerx + int(self.gameState.screenWidth*0.5)
+        y = -target.rect.centery + int(self.gameState.screenHeight*0.5)
+        self.cam += (vec(x, y) - self.cam) * 0.05
+        self.cam.x = max(-(self.mapWidth - self.gameState.screenWidth), min(0, int(self.cam.x)))
+        self.cam.y = max(-(self.mapHeight - self.gameState.screenHeight), min(0, int(self.cam.y)))
+        self.camera.topleft = self.cam

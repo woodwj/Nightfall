@@ -3,8 +3,9 @@ import utils
 import math
 import pathlib
 import animations
-from settings import *
+import settings
 import tileSprite
+from random import uniform
 
 vec = pg.math.Vector2
 
@@ -17,18 +18,19 @@ class player(tileSprite.tileSprite):
         self.groups = self.gameScene.objects.groupAll
         super().__init__(self.gameScene, tile_x, tile_y, self.groups)     
         # initilize the super with desired groups
-        self.action, self.weapon = p_action, p_weapon
+        self.action, self.weapon = settings.p_action, settings.p_weapon
         self.animator = animations.animator("player")
-        self.animator.newAction(p_action, p_weapon)
+        self.animator.newAction(settings.p_action, settings.p_weapon)
         self.imgFile = self.animator.animList[0]
         self.image = pg.image.load(self.imgFile).convert_alpha()
         self.image = pg.transform.scale( self.image, (self.gameScene.state.tileSize * 2,self.gameScene.state.tileSize *2))
         self.rect = self.image.get_rect()
         self.originalImage = self.image
-        self.col_rect = p_collisionRect
+        self.col_rect = settings.p_collisionRect
         self.vel = vec(0,0)
         self.pos = vec(tile_x,tile_y)*self.gameScene.state.tileSize
         self.screenPos = vec(0,0)
+        self.last_shot = 0
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
     def controls(self):
@@ -37,13 +39,23 @@ class player(tileSprite.tileSprite):
 
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vel.x = p_speed * -1
+            self.vel.x = settings.p_speed * -1
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vel.x = p_speed 
+            self.vel.x = settings.p_speed 
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vel.y = p_speed * -1
+            self.vel.y = settings.p_speed * -1
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vel.y = p_speed
+            self.vel.y = settings.p_speed
+        mouse_pressed = pg.mouse.get_pressed()
+        if mouse_pressed[0]:
+            now = pg.time.get_ticks()
+            if now - self.last_shot > settings.b_rate:
+                self.last_shot = now
+                direction = vec(1, 0).rotate(-self.angle)
+                pos = self.pos + settings.p_barrelOffset.rotate(-self.angle)
+                Bullet(self.gameScene, pos, direction, self.angle, "pistol")
+                self.vel = vec(-settings.b_kickback, 0).rotate(-self.angle)
+
         # code to adjust diagonal speed - diagram to show pythag    
         if self.vel.y !=0 and self.vel.x !=0:
             self.vel *= 0.7071
@@ -51,9 +63,9 @@ class player(tileSprite.tileSprite):
 
     def rotate(self):
         mouse_pos = vec(pg.mouse.get_pos())
-        dif_x, dif_y = mouse_pos.x - self.screenPos.x, mouse_pos.y - self.screenPos.y
-        angle = (180 / math.pi) * -math.atan2(dif_y, dif_x)
-        self.image = pg.transform.rotate(self.originalImage, int(angle))
+        dif_x, dif_y = mouse_pos.x+ - self.screenPos.x, mouse_pos.y + - self.screenPos.y
+        self.angle = (180 / math.pi) * -math.atan2(dif_y, dif_x)
+        self.image = pg.transform.rotate(self.originalImage, int(self.angle))
         self.rect = self.image.get_rect(center=self.pos)
 
     # player update funciton - called every gameloop
@@ -65,6 +77,33 @@ class player(tileSprite.tileSprite):
         self.rel = self.vel * self.gameScene.state.del_t
         # performs movement
         self.move()
+
+class Bullet(pg.sprite.Sprite):
+    def __init__(self, gameScene, pos, direction, angle, weapon):
+        self.groups = gameScene.objects.groupAll, gameScene.objects.groupBullets
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.gameScene = gameScene
+        self.pos = vec(pos)
+        spread = uniform(-settings.b_spread, settings.b_spread)
+        self.vel = direction.rotate(spread) * settings.b_speed
+        self.animator = animations.animator("bullet")
+        self.animator.newAction("bullet", weapon)
+        self.imgFile = self.animator.animList[0]
+        self.image = pg.image.load(self.imgFile).convert_alpha()
+        self.image = pg.transform.scale( self.image, (int(self.gameScene.state.tileSize*0.7),int(self.gameScene.state.tileSize*0.5)))
+        self.image = pg.transform.rotate(self.image, angle + spread)
+        self.ogImage = self.image
+        self.rect = self.image.get_rect(center=self.pos)
+        self.rect.center = self.pos
+        self.spawn_time = pg.time.get_ticks()
+
+    def update(self):
+        self.pos += self.vel * self.gameScene.state.del_t
+        self.rect.center = self.pos
+        if pg.sprite.spritecollideany(self, self.gameScene.objects.groupWalls):
+            self.kill()
+        if pg.time.get_ticks() - self.spawn_time > settings.b_lifeTime:
+            self.kill()
 
 
 class zombie(tileSprite.tileSprite):
@@ -87,7 +126,7 @@ class zombie(tileSprite.tileSprite):
         self.pos = vec(tile_x, tile_y) * self.gameScene.state.tileSize
         self.vel = vec(0,0)
         self.rect.center = self.pos
-        self.col_rect = z_collisionRect.copy()
+        self.col_rect = settings.z_collisionRect.copy()
    
     def rotate(self):
         self.rot = (self.gameScene.objects.player.pos - self.pos).angle_to(vec(1, 0))
@@ -99,14 +138,14 @@ class zombie(tileSprite.tileSprite):
         self.vel = vec(0,0)
         # x axis
         if self.rect.x < self.gameScene.objects.player.rect.centerx:
-            self.vel.x = z_speed
+            self.vel.x =    settings.z_speed
         elif self.rect.x > self.gameScene.objects.player.rect.centerx:
-            self.vel.x = z_speed * -1
+            self.vel.x =    settings.z_speed * -1
         # y axis
         if self.rect.y < self.gameScene.objects.player.rect.centery:
-            self.vel.y = z_speed
+            self.vel.y =    settings.z_speed
         elif self.rect.y > self.gameScene.objects.player.rect.centery:
-            self.vel.y = z_speed * -1
+            self.vel.y =    settings.z_speed * -1
         
         if self.vel.y !=0 and self.vel.x !=0:   
             self.vel *= 0.7071

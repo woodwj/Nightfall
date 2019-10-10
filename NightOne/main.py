@@ -57,13 +57,16 @@ class gameScene:
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
             self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
-        #pg.draw.rect(self.state.screen, RED, self.objects.player.rect, 2)
+        #pg.draw.rect(self.state.screen, RED, self.camera.moveRect, 2)
         pg.display.flip()
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
         self.objects.groupAll.update()
         self.camera.update(self.objects.player)
+        hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True)
+        for hit in hits:
+            hit.kill()
 
 # class for objects that exists in game
 class gameObjects:
@@ -72,13 +75,13 @@ class gameObjects:
         self.groupAll = pg.sprite.Group()
         self.groupWalls = pg.sprite.Group()
         self.groupZombies = pg.sprite.Group()
+        self.groupBullets = pg.sprite.Group()
 
 # class for setting config
 class gameState:
     def __init__(self):
         self.del_t = 0
-        pg.display.set_caption(s_title)
-        pg.key.set_repeat(500, 100)
+        pg.display.set_caption(s_title)      
         self.screenWidth = s_screenWidth
         self.screenHeight = s_screenHeight
         self.tileSize = s_tileSize
