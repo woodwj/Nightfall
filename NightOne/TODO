@@ -1,0 +1,5 @@
+animation solutions:
+1) limit player aimations to - shoot, reload
+2) limit zombie animations to - move, attack
+3) Cashe pixel adresses from pg.load into strucutre
+4) 

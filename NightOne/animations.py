@@ -35,7 +35,7 @@ class animator():
         if action == "shoot":
             self.animSpeed = 500 // self.animLength
         if action == "move":
-            self.animSpeed = 2000 // self.animLength
+            self.animSpeed = 2500 // self.animLength
         if action == "idle":
             self.animSpeed = 2500 // self.animLength
 

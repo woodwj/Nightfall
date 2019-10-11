@@ -3,6 +3,7 @@ import actors
 import grid
 import tileSprite
 import environments
+import gallery
 
 import pathlib
 # * import makes varibles exist in main - use varName rather than settings.varName
@@ -17,8 +18,10 @@ class gameScene:
         self.gameLoop = False
         self.clock = pg.time.Clock()
         self.state = gameState()
+        self.state.gallery = gallery.gallery(self)
         self.objects = gameObjects()
         self.initScene()
+        
 
     # an init Scene to reset/start scene in a new map zone ect    
     def initScene(self):
