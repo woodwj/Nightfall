@@ -22,7 +22,6 @@ class gameScene:
 
     # an init Scene to reset/start scene in a new map zone ect    
     def initScene(self):
-        
         # re/created map and camera objects
         self.map = grid.mapManager(self.state)
         self.camera = grid.camera(self.state, self.map.width, self.map.height)
@@ -51,7 +50,7 @@ class gameScene:
     
     # draws sprites to the screen and adjusts to the camera - called every game loop
     def draw(self):
-        pg.display.set_caption(self.state.title)
+        pg.display.set_caption("{:.2f}".format(self.clock.get_fps())) 
         self.state.screen.fill(bgColour)
         self.map.draw_Grid()
         # loop to blit every sprite to the camera apply method
@@ -81,7 +80,8 @@ class gameObjects:
 class gameState:
     def __init__(self):
         self.del_t = 0
-        pg.display.set_caption(s_title)      
+        #pg.display.set_caption(s_title)
+             
         self.screenWidth = s_screenWidth
         self.screenHeight = s_screenHeight
         self.tileSize = s_tileSize

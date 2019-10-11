@@ -17,7 +17,7 @@ class tileSprite(pg.sprite.Sprite):
             self.rect.topleft =  self.pos 
 
     def move(self):
-        self.pos += self.rel
+        self.pos += self.moveDist
         self.col_rect.centerx = self.pos.x
         self.collide_with_walls('x')
         self.col_rect.centery = self.pos.y
@@ -51,4 +51,10 @@ class tileSprite(pg.sprite.Sprite):
                 self.col_rect.centery = self.pos.y
 
     def collideDetect(self,sprite1,sprite2):
-        return sprite1.col_rect.colliderect(sprite2.rect) 
+        return sprite1.col_rect.colliderect(sprite2.rect)
+    
+    def changeImg(self):
+        self.image = pg.image.load(self.animator.animDir).convert_alpha()
+        self.image = pg.transform.scale(self.image, (self.gameScene.state.tileSize * 2, self.gameScene.state.tileSize *2))
+        self.rect = self.image.get_rect(center = self.rect.center)
+        self.ogImage = self.image

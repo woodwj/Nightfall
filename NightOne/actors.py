@@ -22,10 +22,7 @@ class player(tileSprite.tileSprite):
         self.animator = animations.animator("player")
         self.animator.newAction(settings.p_action, settings.p_weapon)
         self.imgFile = self.animator.animList[0]
-        self.image = pg.image.load(self.imgFile).convert_alpha()
-        self.image = pg.transform.scale( self.image, (self.gameScene.state.tileSize * 2,self.gameScene.state.tileSize *2))
-        self.rect = self.image.get_rect()
-        self.originalImage = self.image
+        self.changeImg()
         self.col_rect = settings.p_collisionRect
         self.vel = vec(0,0)
         self.pos = vec(tile_x,tile_y)*self.gameScene.state.tileSize
@@ -36,18 +33,28 @@ class player(tileSprite.tileSprite):
     def controls(self):
         # velocity in both axis set to 0
         self.vel = vec(0,0)
-
-        keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vel.x = settings.p_speed * -1
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vel.x = settings.p_speed 
-        if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vel.y = settings.p_speed * -1
-        if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vel.y = settings.p_speed
+        
         mouse_pressed = pg.mouse.get_pressed()
-        if mouse_pressed[0]:
+        keys = pg.key.get_pressed()    
+        if keys[pg.K_LEFT] or keys[pg.K_a]:
+            self.vel.x += settings.p_speed * -1   
+        elif keys[pg.K_RIGHT] or keys[pg.K_d]:
+            self.vel.x += settings.p_speed     
+        if keys[pg.K_UP] or keys[pg.K_w]:
+            self.vel.y += settings.p_speed * -1 
+        elif keys[pg.K_DOWN] or keys[pg.K_s]:
+            self.vel.y += settings.p_speed
+    
+        if self.vel.y == 0 and self.vel.x ==0:
+            actionNew = "idle"
+        else:
+            if self.vel.y !=0 and self.vel.x !=0:   
+                self.vel *= 0.7071
+                self.vel = vec(int(self.vel.x), int(self.vel.y))
+            actionNew = "idle"
+               
+        if mouse_pressed[0] :
+            actionNew = "shoot"
             now = pg.time.get_ticks()
             if now - self.last_shot > settings.b_rate:
                 self.last_shot = now
@@ -56,27 +63,31 @@ class player(tileSprite.tileSprite):
                 Bullet(self.gameScene, pos, direction, self.angle, "pistol")
                 self.vel = vec(-settings.b_kickback, 0).rotate(-self.angle)
 
-        # code to adjust diagonal speed - diagram to show pythag    
-        if self.vel.y !=0 and self.vel.x !=0:
-            self.vel *= 0.7071
-            self.vel = vec(int(self.vel.x), int(self.vel.y))
+        if actionNew != self.action:
+            self.action = actionNew
+            self.animator.newAction(self.action, self.weapon)
 
     def rotate(self):
         mouse_pos = vec(pg.mouse.get_pos())
         dif_x, dif_y = mouse_pos.x+ - self.screenPos.x, mouse_pos.y + - self.screenPos.y
         self.angle = (180 / math.pi) * -math.atan2(dif_y, dif_x)
-        self.image = pg.transform.rotate(self.originalImage, int(self.angle))
+        self.image = pg.transform.rotate(self.ogImage, int(self.angle))
         self.rect = self.image.get_rect(center=self.pos)
 
     # player update funciton - called every gameloop
     def update(self):
-        self.rotate()
         # check controls
         self.controls()
-        # chane in x and y is calculated off velocity and the change in time
-        self.rel = self.vel * self.gameScene.state.del_t
-        # performs movement
-        self.move()
+        self.animator.update()
+        if self.animator.animChange:
+            self.changeImg()
+        self.rotate()
+        # change in x and y is calculated off velocity and the change in time
+        self.moveDist = self.vel * self.gameScene.state.del_t
+        if self.moveDist.y !=0 or self.moveDist.x !=0:
+            # performs movement
+            self.move()
+        #print(self.action,self.animator.animCount)
 
 class Bullet(pg.sprite.Sprite):
     def __init__(self, gameScene, pos, direction, angle, weapon):
@@ -87,7 +98,7 @@ class Bullet(pg.sprite.Sprite):
         spread = uniform(-settings.b_spread, settings.b_spread)
         self.vel = direction.rotate(spread) * settings.b_speed
         self.animator = animations.animator("bullet")
-        self.animator.newAction("bullet", weapon)
+        self.animator.newAction(weapon = weapon)
         self.imgFile = self.animator.animList[0]
         self.image = pg.image.load(self.imgFile).convert_alpha()
         self.image = pg.transform.scale( self.image, (int(self.gameScene.state.tileSize*0.7),int(self.gameScene.state.tileSize*0.5)))
@@ -116,13 +127,11 @@ class zombie(tileSprite.tileSprite):
 
         self.gameScene = gameScene
         self.animator = animations.animator("zombie")
-        self.animator.newAction("idle")
-        self.imgFile = self.animator.animList[0]
-        self.image = pg.image.load(self.imgFile).convert_alpha()
-        self.image = pg.transform.scale( self.image, (self.gameScene.state.tileSize * 2,self.gameScene.state.tileSize *2))
-        self.ogImage = self.image
+        self.action = "idle"
+        self.animator.newAction(self.action)
+        self.changeImg()
         self.rect = self.image.get_rect()
-        self.originalImage = self.image
+        self.ogImage = self.image
         self.pos = vec(tile_x, tile_y) * self.gameScene.state.tileSize
         self.vel = vec(0,0)
         self.rect.center = self.pos
@@ -134,24 +143,38 @@ class zombie(tileSprite.tileSprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
     
-    def chase(self):
+    def detect(self):
         self.vel = vec(0,0)
         # x axis
         if self.rect.x < self.gameScene.objects.player.rect.centerx:
-            self.vel.x =    settings.z_speed
+            self.vel.x = settings.z_speed
         elif self.rect.x > self.gameScene.objects.player.rect.centerx:
-            self.vel.x =    settings.z_speed * -1
+            self.vel.x = settings.z_speed * -1
         # y axis
         if self.rect.y < self.gameScene.objects.player.rect.centery:
-            self.vel.y =    settings.z_speed
+            self.vel.y = settings.z_speed
         elif self.rect.y > self.gameScene.objects.player.rect.centery:
-            self.vel.y =    settings.z_speed * -1
+            self.vel.y = settings.z_speed * -1
         
-        if self.vel.y !=0 and self.vel.x !=0:   
-            self.vel *= 0.7071
-            
+        if self.vel.y == 0 and self.vel.x ==0:
+            actionNew = "idle"
+        else:
+            if self.vel.y !=0 and self.vel.x !=0:
+                self.vel *= 0.7071
+                self.vel = vec(int(self.vel.x), int(self.vel.y))
+            actionNew = "move"
+    
+        if actionNew != self.action:
+            self.action = actionNew
+            self.animator.newAction(self.action)       
+
     def update(self):
+        
+        self.detect()
+        self.animator.update()
+        if self.animator.animChange:
+            self.changeImg()
         self.rotate()
-        self.chase()
-        self.rel = self.vel * self.gameScene.state.del_t
-        self.move()
+        self.moveDist = self.vel * self.gameScene.state.del_t
+        if self.moveDist.x != 0 or self.moveDist.y !=0:
+            self.move()
