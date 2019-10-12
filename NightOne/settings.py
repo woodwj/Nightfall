@@ -36,11 +36,29 @@ p_action = "idle"
 p_barrelOffset = vec(p_collisionRect.bottomright) *0.4
 
 # bullet settings
-b_speed = 400
-b_spread = 5
-b_lifeTime = 10000
-b_rate = 500
-b_kickback = 0
+guns = {
+    "handgun":{
+        "b_speed" : 400,
+        "b_spread" : 5,
+        "b_lifeTime" : 10000,
+        "b_rate" : 200,
+        "b_kickback" : 200},
+
+    "shotgun":{
+        "b_speed" : 250,
+        "b_spread" : 45,
+        "b_lifeTime" : 10000,
+        "b_rate" : 700,
+        "b_kickback" : 500},
+        
+    "rifle":{
+        "b_speed" : 400,
+        "b_spread" : 5,
+        "b_lifeTime" : 10000,
+        "b_rate" : 300,
+        "b_kickback" : 300}
+}
+
 
 # zombie settings
 z_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))

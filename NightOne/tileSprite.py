@@ -54,7 +54,7 @@ class tileSprite(pg.sprite.Sprite):
         return sprite1.col_rect.colliderect(sprite2.rect)
     
     def changeImg(self):
-        self.image = pg.image.load(self.animator.animDir).convert_alpha()
-        self.image = pg.transform.scale(self.image, (self.gameScene.state.tileSize * 2, self.gameScene.state.tileSize *2))
-        self.rect = self.image.get_rect(center = self.rect.center)
+        self.image = self.animator.animImg
         self.ogImage = self.image
+        self.rect =self.image.get_rect(center = self.rect.center)
+        

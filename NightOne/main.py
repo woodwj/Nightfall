@@ -22,7 +22,6 @@ class gameScene:
         self.objects = gameObjects()
         self.initScene()
         
-
     # an init Scene to reset/start scene in a new map zone ect    
     def initScene(self):
         # re/created map and camera objects
@@ -96,8 +95,8 @@ class gameState:
         self.size = (self.screenWidth,self.screenHeight)
         self.title = s_title
         # will eventually be fullscreen, but for debugging will use windowed
-        #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
-        self.screen = pg.display.set_mode(self.size)
+        self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        #self.screen = pg.display.set_mode(self.size)
 
 # instatiate
 Game = gameScene()

@@ -4,12 +4,11 @@ from pathlib import Path
 
 
 class animator():
-    def __init__(self, actorType):
+    def __init__(self, gallery, actorType):
         
-        self.baseFolder = pathlib.Path.cwd()
         self.actorType = actorType
-        self.animList = []        
-        self.actorFolder = self.baseFolder / "art" / self.actorType
+        self.actorDict = gallery.art[self.actorType]
+
         self.displayedTime = pg.time.get_ticks()
         self.animCount = 0
         self.animSpeed = 1000
@@ -21,25 +20,22 @@ class animator():
         self.animList = []
         self.animCount = 0
         if weapon is None:
-            actionFolder = Path(self.actorFolder / action)
+            self.animList = self.actorDict[action]
         elif action is None:
-            actionFolder = Path(self.actorFolder / weapon)
+            self.animList = self.actorDict[weapon]
         else:
-            actionFolder = Path(self.actorFolder / weapon / action)
+            self.animList = self.actorDict[weapon][action]
 
-        for path in actionFolder.iterdir():
-            # because path is object not string
-            self.animList.append(str(path))
         self.animImg = self.animList[self.animCount]
         self.animLength = len(self.animList)
         if action == "shoot":
-            self.animSpeed = 500 // self.animLength
+            self.animSpeed = 200 // self.animLength
         if action == "move":
-            self.animSpeed = 2500 // self.animLength
+            self.animSpeed = 1500 // self.animLength
         if action == "idle":
-            self.animSpeed = 2500 // self.animLength
+            self.animSpeed = 2000 // self.animLength
 
-        self.animDir = self.animList[self.animCount]
+        self.animImg = self.animList[self.animCount]
 
 
     def update(self):
@@ -57,5 +53,5 @@ class animator():
                self.animDirection = "up"
         else:
             self.animChange = False
-        self.animDir = self.animList[self.animCount]
+        self.animImg = self.animList[self.animCount]
         

@@ -18,8 +18,8 @@ class player(tileSprite.tileSprite):
         self.groups = self.gameScene.objects.groupAll
         super().__init__(self.gameScene, tile_x, tile_y, self.groups)     
         # initilize the super with desired groups
-        self.action, self.weapon = settings.p_action, settings.p_weapon
-        self.animator = animations.animator("player")
+        
+        self.animator = animations.animator(self.gameScene.state.gallery, "player")
         self.animator.newAction(settings.p_action, settings.p_weapon)
         self.imgFile = self.animator.animList[0]
         self.changeImg()
@@ -27,13 +27,18 @@ class player(tileSprite.tileSprite):
         self.vel = vec(0,0)
         self.pos = vec(tile_x,tile_y)*self.gameScene.state.tileSize
         self.screenPos = vec(0,0)
+        
+        self.action, self.weapon = settings.p_action, settings.p_weapon
+        self.weapons = ["handgun", "rifle","shotgun"]
+        self.weaponIndex = 0
         self.last_shot = 0
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
     def controls(self):
         # velocity in both axis set to 0
         self.vel = vec(0,0)
-        
+        actionNew, weaponNew = self.action, self.weapon
+
         mouse_pressed = pg.mouse.get_pressed()
         keys = pg.key.get_pressed()    
         if keys[pg.K_LEFT] or keys[pg.K_a]:
@@ -44,27 +49,35 @@ class player(tileSprite.tileSprite):
             self.vel.y += settings.p_speed * -1 
         elif keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel.y += settings.p_speed
+        
+        if keys[pg.K_1]:
+            weaponNew = "handgun"
+        if keys[pg.K_2]:
+            weaponNew = "rifle"
+        if keys[pg.K_3]:
+            weaponNew = "shotgun"
     
         if self.vel.y == 0 and self.vel.x ==0:
-            actionNew = "idle"
+            actionNew = "move"
         else:
             if self.vel.y !=0 and self.vel.x !=0:   
                 self.vel *= 0.7071
                 self.vel = vec(int(self.vel.x), int(self.vel.y))
             actionNew = "idle"
-               
+
         if mouse_pressed[0] :
-            actionNew = "shoot"
             now = pg.time.get_ticks()
-            if now - self.last_shot > settings.b_rate:
+            if now - self.last_shot > settings.guns[self.weapon]["b_rate"]:
                 self.last_shot = now
+                actionNew = "shoot"
                 direction = vec(1, 0).rotate(-self.angle)
                 pos = self.pos + settings.p_barrelOffset.rotate(-self.angle)
-                Bullet(self.gameScene, pos, direction, self.angle, "pistol")
-                self.vel = vec(-settings.b_kickback, 0).rotate(-self.angle)
+                Bullet(self.gameScene, pos, direction, self.angle, "handgun")
+                self.vel = vec(-1*settings.guns[self.weapon]["b_kickback"], 0).rotate(-self.angle)
 
-        if actionNew != self.action:
+        if actionNew != self.action or weaponNew != self.weapon:
             self.action = actionNew
+            self.weapon = weaponNew
             self.animator.newAction(self.action, self.weapon)
 
     def rotate(self):
@@ -84,6 +97,7 @@ class player(tileSprite.tileSprite):
         self.rotate()
         # change in x and y is calculated off velocity and the change in time
         self.moveDist = self.vel * self.gameScene.state.del_t
+        self.moveDist = vec(int(self.moveDist.x),int(self.moveDist.y))
         if self.moveDist.y !=0 or self.moveDist.x !=0:
             # performs movement
             self.move()
@@ -94,13 +108,13 @@ class Bullet(pg.sprite.Sprite):
         self.groups = gameScene.objects.groupAll, gameScene.objects.groupBullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.gameScene = gameScene
+        self.weapon = weapon
         self.pos = vec(pos)
-        spread = uniform(-settings.b_spread, settings.b_spread)
-        self.vel = direction.rotate(spread) * settings.b_speed
-        self.animator = animations.animator("bullet")
+        spread = uniform(-settings.guns[self.weapon]["b_spread"], settings.guns[self.weapon]["b_spread"])
+        self.vel = direction.rotate(spread) * settings.guns[self.weapon]["b_speed"]
+        self.animator = animations.animator(self.gameScene.state.gallery,"bullet")
         self.animator.newAction(weapon = weapon)
-        self.imgFile = self.animator.animList[0]
-        self.image = pg.image.load(self.imgFile).convert_alpha()
+        self.image = self.animator.animList[0]
         self.image = pg.transform.scale( self.image, (int(self.gameScene.state.tileSize*0.7),int(self.gameScene.state.tileSize*0.5)))
         self.image = pg.transform.rotate(self.image, angle + spread)
         self.ogImage = self.image
@@ -113,7 +127,7 @@ class Bullet(pg.sprite.Sprite):
         self.rect.center = self.pos
         if pg.sprite.spritecollideany(self, self.gameScene.objects.groupWalls):
             self.kill()
-        if pg.time.get_ticks() - self.spawn_time > settings.b_lifeTime:
+        if pg.time.get_ticks() - self.spawn_time > settings.guns[self.weapon]["b_lifeTime"]:
             self.kill()
 
 
@@ -126,7 +140,7 @@ class zombie(tileSprite.tileSprite):
         super().__init__(self.gameScene, tile_x, tile_y, self.groups)
 
         self.gameScene = gameScene
-        self.animator = animations.animator("zombie")
+        self.animator = animations.animator(self.gameScene.state.gallery,"zombie")
         self.action = "idle"
         self.animator.newAction(self.action)
         self.changeImg()
