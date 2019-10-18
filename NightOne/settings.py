@@ -1,4 +1,5 @@
 import pygame as pg
+from random import randint
 vec = pg.math.Vector2
 
 # colours
@@ -11,11 +12,11 @@ GREY = (65,65,65)
 bgColour = GREY
 
 # Screen Settings
-s_screenWidth = 1980
-s_screenHeight = 1080
+s_screenWidth = 1200
+s_screenHeight = 700
 s_halfWidth = int(s_screenWidth * 0.5)
 s_halfHeight = int(s_screenHeight * 0.5)
-s_FPS = 60
+s_FPS = 120
 s_title = "NightOne"
 s_tileSize = 48
 s_gridWidth = int(s_screenWidth/s_tileSize)
@@ -38,25 +39,31 @@ p_barrelOffset = vec(p_collisionRect.bottomright) *0.4
 # bullet settings
 guns = {
     "handgun":{
-        "b_speed" : 400,
+        "b_speed" : 450,
         "b_spread" : 5,
         "b_lifeTime" : 10000,
         "b_rate" : 200,
-        "b_kickback" : 200},
+        "b_kickback" : 200,
+        "b_damage": 100
+        },
 
     "shotgun":{
         "b_speed" : 250,
-        "b_spread" : 45,
+        "b_spread" : 120,
         "b_lifeTime" : 10000,
         "b_rate" : 700,
-        "b_kickback" : 500},
+        "b_kickback" : 500,
+        "b_damage": 100
+        },
         
     "rifle":{
-        "b_speed" : 400,
+        "b_speed" : 300,
         "b_spread" : 5,
         "b_lifeTime" : 10000,
         "b_rate" : 300,
-        "b_kickback" : 300}
+        "b_kickback" : 300,
+        "b_damage": 250
+        }
 }
 
 
@@ -64,6 +71,8 @@ guns = {
 z_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
 z_speed = 100
 z_action = "idle"
+z_range = [400,700]
+z_health = 500
 
 #camera settings
 c_speed = 500

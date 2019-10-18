@@ -4,7 +4,7 @@ import grid
 import tileSprite
 import environments
 import gallery
-
+import utils
 import pathlib
 # * import makes varibles exist in main - use varName rather than settings.varName
 from settings import *
@@ -38,7 +38,7 @@ class gameScene:
                 if tile == 'P':
                     self.objects.player = actors.player(self, collumIndex, rowIndex)
                 # zombie mapping
-                if tile == "z":
+                if tile == "Z":
                     actors.zombie(self, collumIndex, rowIndex)
 
     # deals with relevent game level events for quit/pause ect - called every game loop
@@ -54,20 +54,25 @@ class gameScene:
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps())) 
         self.state.screen.fill(bgColour)
-        self.map.draw_Grid()
+        #self.map.draw_Grid()
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
             self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
-        #pg.draw.rect(self.state.screen, RED, self.camera.moveRect, 2)
+        #pg.draw.rect(self.state.screen, RED, self.objects.player.col_rect, 2)
+        #pg.draw.rect(self.state.screen, BLUE, self.objects.player.rect, 2)
         pg.display.flip()
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
         self.objects.groupAll.update()
         self.camera.update(self.objects.player)
-        hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True)
-        for hit in hits:
-            hit.kill()
+        hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, utils.collideDetect)
+        if hits:
+            for zombie in hits:
+                for bullet in hits[zombie]:
+                    zombie.health -= bullet.damage
+        pg.sprite.groupcollide(self.objects.groupBullets, self.objects.groupWalls, True, False, utils.collideDetect)
+        
 
 # class for objects that exists in game
 class gameObjects:
@@ -95,8 +100,8 @@ class gameState:
         self.size = (self.screenWidth,self.screenHeight)
         self.title = s_title
         # will eventually be fullscreen, but for debugging will use windowed
-        self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
-        #self.screen = pg.display.set_mode(self.size)
+        #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        self.screen = pg.display.set_mode(self.size)
 
 # instatiate
 Game = gameScene()

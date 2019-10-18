@@ -10,6 +10,9 @@ def cleanDuplicates(structure):
         if item not in clean:
             clean.append(item)
     return(clean)
+
+def collideDetect(sprite1,sprite2):
+        return sprite1.col_rect.colliderect(sprite2.col_rect)
     
 # recursice algorithm to extract all values associated with a key in a multilevel dictionary
 def gen_dict_extract(key, var):

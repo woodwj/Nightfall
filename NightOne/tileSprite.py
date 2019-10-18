@@ -36,7 +36,6 @@ class tileSprite(pg.sprite.Sprite):
                     self.pos.x = hits[0].rect.right + int(self.col_rect.width / 2)
                 # fix velocity and rect
                 self.vel.x = 0
-                self.col_rect.centerx = self.pos.x
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, self.collideDetect)
             if hits:
@@ -48,13 +47,14 @@ class tileSprite(pg.sprite.Sprite):
                     self.pos.y = hits[0].rect.bottom + int(self.col_rect.height / 2)
                 # fix velocity and rect
                 self.vel.y = 0
-                self.col_rect.centery = self.pos.y
+        self.col_rect.center = self.pos
+        self.rect.center = self.pos
 
     def collideDetect(self,sprite1,sprite2):
-        return sprite1.col_rect.colliderect(sprite2.rect)
+        return sprite1.col_rect.colliderect(sprite2.col_rect)
     
     def changeImg(self):
         self.image = self.animator.animImg
         self.ogImage = self.image
-        self.rect =self.image.get_rect(center = self.rect.center)
+        self.rect =self.image.get_rect(topleft = self.pos)
         
