@@ -71,6 +71,11 @@ class player(tileSprite.tileSprite):
             actionNew = "reload"
         elif keys[pg.K_v]:
             actionNew = "meleeattack"
+        elif keys[pg.K_b]:
+            if state.bMODE:
+                self.state.FPS = 0
+            else:
+                self.state.FPS = settings.s_FPS
         
         # code to deal with shooting
         if mouse_pressed[0] :

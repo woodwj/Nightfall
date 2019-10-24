@@ -20,6 +20,8 @@ class gameScene:
         self.state = gameState()
         self.state.gallery = gallery.gallery(self)
         self.objects = gameObjects()
+        self.state.bMODE = False
+        self.buildMode = buildMode.buildMode()
         self.initScene()
         
     # an init Scene to reset/start scene in a new map zone ect    
@@ -49,6 +51,7 @@ class gameScene:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.gameLoop = True
+            
     
     # draws sprites to the screen and adjusts to the camera - called every game loop
     def draw(self):
@@ -64,14 +67,21 @@ class gameScene:
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
-        self.objects.groupAll.update()
-        self.camera.update(self.objects.player)
-        hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, utils.collideDetect)
-        if hits:
-            for zombie in hits:
-                for bullet in hits[zombie]:
-                    zombie.health -= bullet.damage
-        pg.sprite.groupcollide(self.objects.groupBullets, self.objects.groupWalls, True, False, utils.collideDetect)
+        if self.bMode:
+            self.objects.groupAll.update()
+            self.camera.update(self.objects.player)
+            hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, utils.collideDetect)
+            if hits:
+                for zombie in hits:
+                    for bullet in hits[zombie]:
+                        zombie.health -= bullet.damage
+            pg.sprite.groupcollide(self.objects.groupBullets, self.objects.groupWalls, True, False, utils.collideDetect)
+            else:
+                tick = self.clock.tick(self.state.FPS)
+                Game.state.del_t = tick / 1000
+                self.camera.update(self.bMode)
+                self.buildMode.update()
+                
         
 
 # class for objects that exists in game
@@ -99,7 +109,7 @@ class gameState:
         self.halfHeight = int( 0.5* self.screenHeight )
         self.size = (self.screenWidth,self.screenHeight)
         self.title = s_title
-        # will eventually be fullscreen, but for debugging will use windowed
+        #will eventually be fullscreen, but for debugging will use windowed
         #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
         self.screen = pg.display.set_mode(self.size)
 

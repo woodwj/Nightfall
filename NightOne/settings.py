@@ -12,8 +12,8 @@ GREY = (65,65,65)
 bgColour = GREY
 
 # Screen Settings
-s_screenWidth = 1200
-s_screenHeight = 700
+s_screenWidth = 1920
+s_screenHeight = 1080
 s_halfWidth = int(s_screenWidth * 0.5)
 s_halfHeight = int(s_screenHeight * 0.5)
 s_FPS = 120
