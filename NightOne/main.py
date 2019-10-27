@@ -1,5 +1,6 @@
 import pygame as pg
 import actors
+import buildMode
 import grid
 import tileSprite
 import environments
@@ -20,8 +21,8 @@ class gameScene:
         self.state = gameState()
         self.state.gallery = gallery.gallery(self)
         self.objects = gameObjects()
-        self.state.bMODE = False
-        self.buildMode = buildMode.buildMode()
+        self.state.bMode = False
+        self.buildMode = buildMode.buildMode(self)
         self.initScene()
         
     # an init Scene to reset/start scene in a new map zone ect    
@@ -40,7 +41,7 @@ class gameScene:
                 if tile == 'P':
                     self.objects.player = actors.player(self, collumIndex, rowIndex)
                 # zombie mapping
-                if tile == "Z":
+                if tile == "z":
                     actors.zombie(self, collumIndex, rowIndex)
 
     # deals with relevent game level events for quit/pause ect - called every game loop
@@ -61,28 +62,32 @@ class gameScene:
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
             self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
-        #pg.draw.rect(self.state.screen, RED, self.objects.player.col_rect, 2)
-        #pg.draw.rect(self.state.screen, BLUE, self.objects.player.rect, 2)
+        #pg.draw.rect(self.state.screen, RED, self.camera.moveRect, 2)
         pg.display.flip()
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
-        if self.bMode:
+        if not self.state.bMode:
             self.objects.groupAll.update()
             self.camera.update(self.objects.player)
-            hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, utils.collideDetect)
+            hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, tileSprite.collideDetect)
             if hits:
                 for zombie in hits:
                     for bullet in hits[zombie]:
                         zombie.health -= bullet.damage
-            pg.sprite.groupcollide(self.objects.groupBullets, self.objects.groupWalls, True, False, utils.collideDetect)
-            else:
-                tick = self.clock.tick(self.state.FPS)
-                Game.state.del_t = tick / 1000
-                self.camera.update(self.bMode)
-                self.buildMode.update()
+            pg.sprite.groupcollide(self.objects.groupBullets, self.objects.groupWalls, True, False, tileSprite.collideDetect)
+        else:
+            tick = self.clock.tick(self.state.FPS)
+            Game.state.del_t = tick / 1000
+            self.camera.update(self.bMode)
+            self.buildMode.update()
                 
         
+        self.objects.groupAll.update()
+        self.camera.update(self.objects.player)
+        hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True)
+        for hit in hits:
+            hit.kill()
 
 # class for objects that exists in game
 class gameObjects:

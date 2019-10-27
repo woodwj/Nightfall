@@ -1,6 +1,5 @@
 import pygame as pg
 import pathlib
-from random import randint
 from pathlib import Path
 
 
@@ -29,18 +28,12 @@ class animator():
 
         self.animImg = self.animList[self.animCount]
         self.animLength = len(self.animList)
-        
         if action == "shoot":
             self.animSpeed = 200 // self.animLength
-        elif action == "move":
-            self.animCount = randint(0,self.animLength-1)
+        if action == "move":
             self.animSpeed = 1500 // self.animLength
-        elif action == "idle":
+        if action == "idle":
             self.animSpeed = 2000 // self.animLength
-        elif action == "reload":
-            self.animSpeed = 800 // self.animLength
-        elif action == "meleeattack":
-            self.animSpeed = 1000 // self.animLength
 
         self.animImg = self.animList[self.animCount]
 

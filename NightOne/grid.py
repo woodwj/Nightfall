@@ -10,7 +10,7 @@ vec = pg.math.Vector2
 class mapManager():
     def __init__(self, gameState, directory = "start.txt"):
         self.gameState = gameState
-        # using pathlib to standarise directories
+        # using pathlib to standardize directories
         baseFolder = pathlib.Path.cwd()
         mapDir = baseFolder / "maps" / directory
         self.data = []
@@ -31,8 +31,6 @@ class mapManager():
         for y in range(0, self.height, self.gameState.tileSize):
             pg.draw.line(self.gameState.screen, WHITE, (0, y), (self.width, y))
 
-
-
 class camera:
     def __init__(self, gameState, width, height):
         # creates the camera and imports some settings
@@ -43,8 +41,7 @@ class camera:
         self.mapHeight = height
         self.offset = vec(0,0)
         self.cam = vec(0,0)
-        
-        
+    
     # applies the camera to a target    
     def apply(self, target):
         return target.rect.move(self.camera.topleft)
@@ -71,3 +68,4 @@ class camera:
         self.cam.x = max(-(self.mapWidth - self.gameState.screenWidth), min(0, int(self.cam.x)))
         self.cam.y = max(-(self.mapHeight - self.gameState.screenHeight), min(0, int(self.cam.y)))
         self.camera.topleft = self.cam
+        
