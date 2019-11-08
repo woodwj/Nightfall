@@ -16,7 +16,10 @@ class gallery():
                 if isinstance(returnStruct, dict):
                     returnStruct = []
                 img = pg.image.load(path._str).convert_alpha()
-                img = pg.transform.scale(img, (self.gameScene.state.tileSize * 2, self.gameScene.state.tileSize *2))
+                if "wall" in path.parts:
+                    img = pg.transform.scale(img, (self.gameScene.state.tileSize, self.gameScene.state.tileSize))
+                else:
+                    img = pg.transform.scale(img, (self.gameScene.state.tileSize * 2, self.gameScene.state.tileSize *2))
                 returnStruct.append(img)
             elif path.is_dir():
                 if isinstance(returnStruct, list): 

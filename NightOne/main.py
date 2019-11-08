@@ -1,14 +1,14 @@
 import pygame as pg
 import actors
-import buildMode
 import grid
 import tileSprite
 import environments
+import buildMode
 import gallery
 import utils
 import pathlib
 # * import makes varibles exist in main - use varName rather than settings.varName
-from settings import *
+import settings
 pg.init()
 vec = pg.math.Vector2
 
@@ -21,15 +21,15 @@ class gameScene:
         self.state = gameState()
         self.state.gallery = gallery.gallery(self)
         self.objects = gameObjects()
-        self.state.bMode = False
-        self.buildMode = buildMode.buildMode(self)
+        self.state.bMode = settings.bMode
+        self.objects.buildMode = buildMode.buildMode(self)
         self.initScene()
         
     # an init Scene to reset/start scene in a new map zone ect    
     def initScene(self):
         # re/created map and camera objects
-        self.map = grid.mapManager(self.state)
-        self.camera = grid.camera(self.state, self.map.width, self.map.height)
+        self.map = grid.mapManager(self)
+        self.camera = grid.camera(self, self.map.width, self.map.height)
 
         # loop to create sprites from parsed map files
         for rowIndex, tiles in enumerate(self.map.data):
@@ -41,53 +41,59 @@ class gameScene:
                 if tile == 'P':
                     self.objects.player = actors.player(self, collumIndex, rowIndex)
                 # zombie mapping
-                if tile == "z":
+                if tile == "Z":
                     actors.zombie(self, collumIndex, rowIndex)
 
     # deals with relevent game level events for quit/pause ect - called every game loop
     def events(self):
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.gameLoop = True
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.gameLoop = True
+                if event.key == pg.K_b:
+                    self.state.bMode = not(self.state.bMode)
+                    if self.state.bMode:
+                        self.objects.buildMode.start()
+                    else:
+                        self.objects.buildMode.end()
             
     
     # draws sprites to the screen and adjusts to the camera - called every game loop
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps())) 
-        self.state.screen.fill(bgColour)
-        #self.map.draw_Grid()
+        self.state.screen.fill(settings.bgColour)
         # loop to blit every sprite to the camera apply method
         for sprite in self.objects.groupAll:
-            self.state.screen.blit(sprite.image, self.camera.apply(sprite))   
-        #pg.draw.rect(self.state.screen, RED, self.camera.moveRect, 2)
-        pg.display.flip()
+            self.state.screen.blit(sprite.image, self.camera.apply(sprite))
+
+        if self.state.bMode:
+            self.camera.draw_Grid()
+            self.state.screen.blit(self.objects.buildMode.image, self.camera.apply(self.objects.buildMode))
+        pg.draw.rect(self.state.screen, settings.RED, self.objects.player.col_rect, 1)
+
+
+        pg.display.flip()    
         
     # calls update of all sprites and camera to its follow target - called every game loop    
     def update(self):
-        if not self.state.bMode:
-            self.objects.groupAll.update()
-            self.camera.update(self.objects.player)
-            hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, tileSprite.collideDetect)
-            if hits:
-                for zombie in hits:
-                    for bullet in hits[zombie]:
-                        zombie.health -= bullet.damage
-            pg.sprite.groupcollide(self.objects.groupBullets, self.objects.groupWalls, True, False, tileSprite.collideDetect)
-        else:
-            tick = self.clock.tick(self.state.FPS)
-            Game.state.del_t = tick / 1000
-            self.camera.update(self.bMode)
-            self.buildMode.update()
-                
+        self.keys = pg.key.get_pressed()
+        self.mouse_pos = pg.mouse.get_pos()
+        self.mouse_pressed = pg.mouse.get_pressed()
         
-        self.objects.groupAll.update()
+        if self.state.bMode:
+            self.objects.buildMode.update()
+        else:
+            self.objects.groupAll.update()
         self.camera.update(self.objects.player)
-        hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True)
-        for hit in hits:
-            hit.kill()
+        hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, utils.collideDetect)
+        if hits:
+            for zombie in hits:
+                for bullet in hits[zombie]:
+                    zombie.health -= bullet.damage
+        pg.sprite.groupcollide(self.objects.groupBullets, self.objects.groupWalls, True, False, utils.collideDetect)
 
 # class for objects that exists in game
 class gameObjects:
@@ -102,24 +108,24 @@ class gameObjects:
 class gameState:
     def __init__(self):
         self.del_t = 0
-        #pg.display.set_caption(s_title)
-             
-        self.screenWidth = s_screenWidth
-        self.screenHeight = s_screenHeight
-        self.tileSize = s_tileSize
-        self.gridWidth = s_gridWidth
-        self.gridHeight = s_gridHeight
-        self.FPS = s_FPS
+        #pg.display.set_caption(settings.s_title)
+        self.screenWidth = settings.s_screenWidth
+        self.screenHeight = settings.s_screenHeight
+        self.tileSize = settings.s_tileSize
+        self.gridWidth = settings.s_gridWidth
+        self.gridHeight = settings.s_gridHeight
+        self.FPS = settings.s_FPS
         self.halfWidth = int( 0.5* self.screenWidth )
         self.halfHeight = int( 0.5* self.screenHeight )
         self.size = (self.screenWidth,self.screenHeight)
-        self.title = s_title
-        #will eventually be fullscreen, but for debugging will use windowed
+        self.title = settings.s_title
+        # will eventually be fullscreen, but for debugging will use windowed
         #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
         self.screen = pg.display.set_mode(self.size)
 
 # instatiate
 Game = gameScene()
+pg.key.set_repeat(500,1)
 
 # Mainloop
 while not Game.gameLoop:
