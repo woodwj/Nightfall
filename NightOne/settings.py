@@ -1,6 +1,7 @@
 import pygame as pg
 from random import randint
 vec = pg.math.Vector2
+pg.font.init()
 
 # colours
 RED = (255,0,0)
@@ -21,6 +22,7 @@ s_title = "NightOne"
 s_tileSize = 48
 s_gridWidth = int(s_screenWidth/s_tileSize)
 s_gridHeight = int(s_screenHeight/s_tileSize)
+s_font = pg.font.SysFont('Consolas', 30)
 
 # sprite settings
 sp_scale = 2
@@ -35,6 +37,7 @@ p_weapon = "handgun"
 p_action = "idle"
 #p_barrelOffset = vec(int(s_tileSize*0.5), int(p_collisionRect.height*0.5))
 p_barrelOffset = vec(p_collisionRect.bottomright) *0.4
+p_health = 500
 
 # bullet settings
 guns = {
@@ -66,13 +69,16 @@ guns = {
         }
 }
 
-
+# round settings
+r_countdown = 15
 # zombie settings
 z_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
 z_speed = 100
 z_action = "idle"
 z_range = [400,700]
 z_health = 500
+z_maxzombies = 30
+z_damage = 50
 
 # camera settings
 c_speed = 500
@@ -85,5 +91,29 @@ c_returnHeight = 0
 
 # build mode settings
 bMode = False
+bm_objects = {
+    "wood":{
+        "health":500,
+        "cost": 10},
+
+    "plank":{
+        "health":1000,
+        "cost": 25},
+
+    "stone":{
+        "health":1500,
+        "cost":50},
+
+    "brick":{
+        "health":2000,
+        "cost": 75},
+
+    "concrete":{
+        "health":2500,
+        "cost": 100}
+}
 # custom events
-e_BMODEEVENT = pg.USEREVENT + 1
+e_SCRAPGAIN = pg.USEREVENT + 1
+e_ROUNDSTART = pg.USEREVENT + 2
+e_ROUNDCOUNTDOWN = pg.USEREVENT + 3
+

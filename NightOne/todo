@@ -6,15 +6,10 @@ Zombies
 Spawn points vs random
 velocity pos or neg then times speed
 
-ui
-Inventory system
-
-Map
-add weapon pickups
-
 Art
 make image resolution uniform
 get shotgun bullets assets
 
 Player
 events and timers for bullets
+

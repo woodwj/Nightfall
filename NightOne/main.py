@@ -7,6 +7,7 @@ import buildMode
 import gallery
 import utils
 import pathlib
+from random import choice
 # * import makes varibles exist in main - use varName rather than settings.varName
 import settings
 pg.init()
@@ -30,6 +31,7 @@ class gameScene:
         # re/created map and camera objects
         self.map = grid.mapManager(self)
         self.camera = grid.camera(self, self.map.width, self.map.height)
+        self.objects.spawners = []
 
         # loop to create sprites from parsed map files
         for rowIndex, tiles in enumerate(self.map.data):
@@ -43,6 +45,10 @@ class gameScene:
                 # zombie mapping
                 if tile == "Z":
                     actors.zombie(self, collumIndex, rowIndex)
+                if tile == "s":
+                    self.objects.spawners.append(vec(collumIndex,rowIndex))
+        
+        self.scrapTxt = "SCRAP: " + str(self.objects.buildMode.scrap)
 
     # deals with relevent game level events for quit/pause ect - called every game loop
     def events(self):
@@ -59,6 +65,27 @@ class gameScene:
                         self.objects.buildMode.start()
                     else:
                         self.objects.buildMode.end()
+
+            if event.type == settings.e_SCRAPGAIN:
+                if not self.state.bMode:
+                    self.objects.buildMode.scrap += 1
+                    self.scrapTxt = "SCRAP: " + str(self.objects.buildMode.scrap)
+            
+            if event.type == settings.e_ROUNDSTART:
+                self.state.round = True
+                self.state.roundnumber = event.roundnumber + 1
+                multiplier = self.state.roundnumber * 0.15
+                self.state.roundzombies = int(multiplier * self.state.maxzombies)
+                self.roundTxt = "ROUND: " + str(self.state.roundnumber)
+            
+            if event.type == settings.e_ROUNDCOUNTDOWN:
+                if not self.state.round:
+                    self.roundTxt = "NEXT ROUND:" + str(self.state.countdown)
+                    self.state.countdown -= 1
+                    if self.state.countdown < 0:
+                        ROUNDSTART = pg.event.Event(settings.e_ROUNDSTART, roundnumber = self.state.roundnumber)
+                        pg.event.post(ROUNDSTART, )
+                        self.state.countdown = settings.r_countdown
             
     
     # draws sprites to the screen and adjusts to the camera - called every game loop
@@ -72,9 +99,10 @@ class gameScene:
         if self.state.bMode:
             self.camera.draw_Grid()
             self.state.screen.blit(self.objects.buildMode.image, self.camera.apply(self.objects.buildMode))
-        pg.draw.rect(self.state.screen, settings.RED, self.objects.player.col_rect, 1)
 
-
+        self.state.screen.blit(self.state.font.render(self.scrapTxt, True, settings.WHITE),(10,10))
+        self.state.screen.blit(self.state.font.render(self.roundTxt, True, settings.WHITE),(10,45))   
+   
         pg.display.flip()    
         
     # calls update of all sprites and camera to its follow target - called every game loop    
@@ -88,12 +116,40 @@ class gameScene:
         else:
             self.objects.groupAll.update()
         self.camera.update(self.objects.player)
+
         hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, utils.collideDetect)
         if hits:
             for zombie in hits:
                 for bullet in hits[zombie]:
                     zombie.health -= bullet.damage
-        pg.sprite.groupcollide(self.objects.groupBullets, self.objects.groupWalls, True, False, utils.collideDetect)
+        
+        hits = pg.sprite.groupcollide(self.objects.groupWalls,self.objects.groupBullets, False, True, utils.collideDetect)
+        if hits:
+            for wall in hits:
+                for bullet in hits[wall]:
+                    wall.health -= bullet.damage
+                    if wall.health < 0:
+                        wall.kill()
+        
+        hits = pg.sprite.spritecollide(self.objects.player, self.objects.groupZombies, False, utils.collideDetect)
+        if hits:
+            for zombie in hits:
+                self.objects.player.health -= zombie.damage
+                if zombie.action != "meleeattack":
+                    zombie.action = "meleeattack"
+                    zombie.animator.newAction("meleeattack")
+
+        
+        self.upzombies = len(self.objects.groupZombies.sprites())
+        if self.upzombies < self.state.maxzombies and self.state.roundzombies > 0:
+            spawn = choice(self.objects.spawners)        
+            actors.zombie(self, spawn.x,spawn.y)
+            self.state.roundzombies -= 1
+            
+        self.upzombies = len(self.objects.groupZombies.sprites())  
+        if self.upzombies <= 0 and self.state.round:
+            self.state.round = False
+            pg.time.set_timer(settings.e_ROUNDCOUNTDOWN, 1000)          
 
 # class for objects that exists in game
 class gameObjects:
@@ -103,6 +159,7 @@ class gameObjects:
         self.groupWalls = pg.sprite.Group()
         self.groupZombies = pg.sprite.Group()
         self.groupBullets = pg.sprite.Group()
+        
 
 # class for setting config
 class gameState:
@@ -122,9 +179,16 @@ class gameState:
         # will eventually be fullscreen, but for debugging will use windowed
         #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
         self.screen = pg.display.set_mode(self.size)
+        self.font = settings.s_font
+        self.maxzombies = settings.z_maxzombies
+        self.countdown = settings.r_countdown
+        self.round = False
 
 # instatiate
 Game = gameScene()
+pg.time.set_timer(settings.e_SCRAPGAIN, 1000)
+ROUNDSTART = pg.event.Event(settings.e_ROUNDSTART, roundnumber = 0)
+pg.event.post(ROUNDSTART)
 pg.key.set_repeat(500,1)
 
 # Mainloop

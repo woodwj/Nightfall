@@ -36,7 +36,7 @@ class player(tileSprite.tileSprite):
         self.weaponIndex = 0
         self.last_shot = 0
         # player settings
-        self.health = 100
+        self.health = settings.p_health
         self.type = "player"
     
     # controls method here for 2 reasons 1) code on main is relevent to main 2) player is self contained and modular
@@ -188,11 +188,12 @@ class zombie(tileSprite.tileSprite):
         self.col_rect = settings.z_collisionRect.copy()
         self.col_rect.center = self.rect.center
 
-        self.awake = False
+        self.attack = False
         self.vel = vec(0,0)
         self.range = randint(settings.z_range[0],settings.z_range[1])
         self.rotate(self.range)
         self.health = settings.z_health
+        self.damage = settings.z_damage
         self.type = "zombie"
         
    
@@ -219,24 +220,25 @@ class zombie(tileSprite.tileSprite):
         if self.vel.y !=0 and self.vel.x !=0:
             self.vel *= 0.7071
             self.vel = vec(int(self.vel.x), int(self.vel.y))
-            
+
+        self.actionNew = "move"                   
+
     def detect(self):
-        dist = int(self.pos.distance_to(self.gameScene.objects.player.pos))
-        self.awake = False
-        if dist < self.range:
-            self.awake = True
-            self.rotate(self.range)
         
-        if self.awake:
-            actionNew = "move"
-            self.chase()
-            self.rotate()
-        else:
-            actionNew = "idle"
-            self.rotate(self.angle)
-        
-        if actionNew != self.action:
-            self.action = actionNew
+        self.actionNew = "move" 
+        self.chase()
+        self.rotate()
+    
+        change = False
+        if self.actionNew != self.action:
+            change = True
+            if self.action == "meleeattack":
+                change = False
+                if self.animator.animCount == self.animator.animLength-1:
+                    change = True
+                    
+        if change:
+            self.action = self.actionNew
             self.animator.newAction(self.action)
 
     def update(self):
@@ -252,3 +254,6 @@ class zombie(tileSprite.tileSprite):
         self.moveDist = self.vel  * self.gameScene.state.del_t
         if self.moveDist.x != 0 or self.moveDist.y !=0:
             self.move()
+
+        if self.pos.x < 0 or self.pos.y < 0:
+            self.kill()

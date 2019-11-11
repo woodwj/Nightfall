@@ -21,11 +21,15 @@ class animator():
         self.animList = []
         self.animCount = 0
         if weapon is None:
-            self.animList = self.actorDict[action]
+            self.animDict = self.actorDict[action]
         elif action is None:
-            self.animList = self.actorDict[weapon]
+            self.animDict = self.actorDict[weapon]
         else:
-            self.animList = self.actorDict[weapon][action]
+            self.animDict = self.actorDict[weapon][action]
+        
+        for key in self.animDict:
+            value = self.animDict[key]
+            self.animList.append(value)
 
         self.animImg = self.animList[self.animCount]
         self.animLength = len(self.animList)

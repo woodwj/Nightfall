@@ -39,31 +39,39 @@ class tileSprite(pg.sprite.Sprite):
             if hits:
                 # right -> left
                 if self.vel.x > 0:
-                    #self.pos.x = hits[0].col_rect.left - int(self.col_rect.width / 2)
                     self.col_rect.right = hits[0].col_rect.left
-                    self.pos.x = self.col_rect.centerx
                 # left -> right
                 if self.vel.x < 0:
-                    #self.pos.x = hits[0].col_rect.right + int(self.col_rect.width / 2)
                     self.col_rect.left = hits[0].col_rect.right
-                    self.pos.x = self.col_rect.centerx
                 # fix velocity and rect
                     self.vel.x = 0
+
+                self.pos.x = self.col_rect.centerx
+
+                if self.type == "zombie" and self.action != "meleeattack":
+                    self.action = "meleeattack"
+                    self.animator.newAction("meleeattack")
+                    hits[0].health -= self.damage
+
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, self.collideDetect)
             if hits:
                 # up - > down
                 if self.vel.y > 0:
-                    #self.pos.y = hits[0].col_rect.top - int(self.col_rect.height / 2)
                     self.col_rect.bottom = hits[0].col_rect.top
-                    self.pos.y = self.col_rect.centery
                 # down -> up
                 if self.vel.y < 0:
                     self.col_rect.top = hits[0].col_rect.bottom
-                    self.pos.y = self.col_rect.centery                    
-                    #self.pos.y = hits[0].col_rect.bottom + int(self.col_rect.height / 2)
                 # fix velocity and rect
                     self.vel.y = 0
+
+                self.pos.y = self.col_rect.centery
+
+                if self.type == "zombie" and self.action != "meleeattack":
+                    self.action = "meleeattack"
+                    self.animator.newAction("meleeattack")
+                    hits[0].health -= self.damage
+
 
     def collideDetect(self,sprite1,sprite2):
         return sprite1.col_rect.colliderect(sprite2.col_rect)
@@ -72,6 +80,15 @@ class tileSprite(pg.sprite.Sprite):
         self.image = self.animator.animImg
         self.ogImage = self.image
         self.rect =self.image.get_rect(topleft = self.pos)
+        self.rect.center = self.col_rect.center
+
+    def rotate(self, angle = None):
+        if angle:
+            self.angle = angle
+        self.image = pg.transform.rotate(self.ogImage, self.angle)
+        self.rect = self.image.get_rect(topright  = self.rect.topleft)
+        self.col_rect.center = self.rect.center
+        #self.col_rect.center = self.rect.center    
 
     def update(self):
         # change in x and y is calculated off velocity and the change in time
@@ -81,4 +98,6 @@ class tileSprite(pg.sprite.Sprite):
             # performs movement
             self.move()
         self.vel = vec(0,0)
+        if self.health < 0:
+            self.kill()
         
