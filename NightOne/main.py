@@ -16,7 +16,7 @@ vec = pg.math.Vector2
 # master class that hold the game objects and settings
 class gameScene:
     def __init__(self):
-        
+     
         self.gameLoop = False
         self.clock = pg.time.Clock()
         self.state = gameState()
@@ -48,7 +48,7 @@ class gameScene:
                 if tile == "s":
                     self.objects.spawners.append(vec(collumIndex,rowIndex))
         
-        self.scrapTxt = "SCRAP: " + str(self.objects.buildMode.scrap)
+        self.scrapTxt = "MATERIALS: " + str(self.objects.buildMode.scrap)
 
     # deals with relevent game level events for quit/pause ect - called every game loop
     def events(self):
@@ -69,7 +69,7 @@ class gameScene:
             if event.type == settings.e_SCRAPGAIN:
                 if not self.state.bMode:
                     self.objects.buildMode.scrap += 1
-                    self.scrapTxt = "SCRAP: " + str(self.objects.buildMode.scrap)
+                    self.scrapTxt = "MATERIALS: " + str(self.objects.buildMode.scrap)
             
             if event.type == settings.e_ROUNDSTART:
                 self.state.round = True
@@ -90,6 +90,7 @@ class gameScene:
     
     # draws sprites to the screen and adjusts to the camera - called every game loop
     def draw(self):
+
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps())) 
         self.state.screen.fill(settings.bgColour)
         # loop to blit every sprite to the camera apply method
@@ -101,7 +102,7 @@ class gameScene:
             self.state.screen.blit(self.objects.buildMode.image, self.camera.apply(self.objects.buildMode))
 
         self.state.screen.blit(self.state.font.render(self.scrapTxt, True, settings.WHITE),(10,10))
-        self.state.screen.blit(self.state.font.render(self.roundTxt, True, settings.WHITE),(10,45))   
+        self.state.screen.blit(self.state.font.render(self.roundTxt, True, settings.WHITE),(10,self.state.tileSize *1))   
    
         pg.display.flip()    
         
@@ -114,22 +115,15 @@ class gameScene:
         if self.state.bMode:
             self.objects.buildMode.update()
         else:
+            self.camera.update(self.objects.player)
             self.objects.groupAll.update()
-        self.camera.update(self.objects.player)
-
-        hits = pg.sprite.groupcollide(self.objects.groupZombies, self.objects.groupBullets, False, True, utils.collideDetect)
-        if hits:
-            for zombie in hits:
-                for bullet in hits[zombie]:
-                    zombie.health -= bullet.damage
         
-        hits = pg.sprite.groupcollide(self.objects.groupWalls,self.objects.groupBullets, False, True, utils.collideDetect)
+        hits = pg.sprite.groupcollide(self.objects.groupBullets,self.objects.groupDestructable, True, False, utils.collideDetect)
         if hits:
-            for wall in hits:
-                for bullet in hits[wall]:
-                    wall.health -= bullet.damage
-                    if wall.health < 0:
-                        wall.kill()
+            for bullet in hits:
+                target = hits[bullet][0]
+                target.health -= bullet.damage
+                    
         
         hits = pg.sprite.spritecollide(self.objects.player, self.objects.groupZombies, False, utils.collideDetect)
         if hits:
@@ -145,8 +139,9 @@ class gameScene:
             spawn = choice(self.objects.spawners)        
             actors.zombie(self, spawn.x,spawn.y)
             self.state.roundzombies -= 1
+            self.upzombies += 1
             
-        self.upzombies = len(self.objects.groupZombies.sprites())  
+          
         if self.upzombies <= 0 and self.state.round:
             self.state.round = False
             pg.time.set_timer(settings.e_ROUNDCOUNTDOWN, 1000)          
@@ -159,6 +154,7 @@ class gameObjects:
         self.groupWalls = pg.sprite.Group()
         self.groupZombies = pg.sprite.Group()
         self.groupBullets = pg.sprite.Group()
+        self.groupDestructable = pg.sprite.Group()
         
 
 # class for setting config
@@ -169,11 +165,7 @@ class gameState:
         self.screenWidth = settings.s_screenWidth
         self.screenHeight = settings.s_screenHeight
         self.tileSize = settings.s_tileSize
-        self.gridWidth = settings.s_gridWidth
-        self.gridHeight = settings.s_gridHeight
         self.FPS = settings.s_FPS
-        self.halfWidth = int( 0.5* self.screenWidth )
-        self.halfHeight = int( 0.5* self.screenHeight )
         self.size = (self.screenWidth,self.screenHeight)
         self.title = settings.s_title
         # will eventually be fullscreen, but for debugging will use windowed

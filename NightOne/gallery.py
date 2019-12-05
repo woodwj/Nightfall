@@ -1,5 +1,6 @@
 import pygame as pg 
 import pathlib
+import settings
 from pathlib import Path
 
 class gallery():
@@ -19,7 +20,7 @@ class gallery():
                 elif path.stem == "v":
                     img = pg.transform.scale(img, (int(self.gameScene.state.tileSize*0.3), self.gameScene.state.tileSize))    
                 else:
-                    img = pg.transform.scale(img, (self.gameScene.state.tileSize * 2, self.gameScene.state.tileSize *2))
+                    img = pg.transform.scale(img, (self.gameScene.state.tileSize * settings.sp_scale, self.gameScene.state.tileSize *settings.sp_scale))
                 returnStruct[path.stem] = (img)
             elif path.is_dir():
                 returnStruct[path.stem] =  self.ripArt(path)

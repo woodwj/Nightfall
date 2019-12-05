@@ -10,7 +10,7 @@ vec = pg.math.Vector2
 class wall(tileSprite.tileSprite):
         def __init__(self, gameScene, tile_x, tile_y,img = None, material = "wall", realpos = None):
             # want walls in all group and wall group
-            self.groups = [gameScene.objects.groupAll, gameScene.objects.groupWalls]
+            self.groups = [gameScene.objects.groupAll, gameScene.objects.groupWalls, gameScene.objects.groupDestructable]
             # initilize the super with desired groups
             super().__init__(gameScene, tile_x, tile_y, self.groups)
             if realpos is not None:

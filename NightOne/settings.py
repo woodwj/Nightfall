@@ -15,13 +15,9 @@ bgColour = GREY
 # Screen Settings
 s_screenWidth = 1920
 s_screenHeight = 1080
-s_halfWidth = int(s_screenWidth * 0.5)
-s_halfHeight = int(s_screenHeight * 0.5)
 s_FPS = 120
 s_title = "NightOne"
 s_tileSize = 48
-s_gridWidth = int(s_screenWidth/s_tileSize)
-s_gridHeight = int(s_screenHeight/s_tileSize)
 s_font = pg.font.SysFont('Consolas', 30)
 
 # sprite settings
@@ -32,10 +28,8 @@ sp_colScale = sp_colratio * sp_scale
 # player settings
 p_speed = 300
 p_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
-#p_image = "survivor-move_handgun_0.png"
 p_weapon = "handgun"
 p_action = "idle"
-#p_barrelOffset = vec(int(s_tileSize*0.5), int(p_collisionRect.height*0.5))
 p_barrelOffset = vec(p_collisionRect.bottomright) *0.4
 p_health = 500
 
@@ -80,37 +74,33 @@ z_health = 500
 z_maxzombies = 30
 z_damage = 50
 
-# camera settings
-c_speed = 500
-c_screenRect = pg.Rect(0,0, s_screenWidth, s_screenHeight)
-c_moveRect = pg.Rect(0,0, int(s_screenWidth/2), int(s_screenHeight/2))
-c_boundryWidth = int(s_screenWidth/4)
-c_boundryHeight = int(s_screenHeight/4)
-c_returnWidth = 0
-c_returnHeight = 0
-
 # build mode settings
 bMode = False
 bm_objects = {
     "wood":{
         "health":500,
-        "cost": 10},
+        "cost": 10
+        },
 
     "plank":{
         "health":1000,
-        "cost": 25},
+        "cost": 25
+        },
 
     "stone":{
         "health":1500,
-        "cost":50},
+        "cost":50
+        },
 
     "brick":{
         "health":2000,
-        "cost": 75},
+        "cost": 75
+        },
 
     "concrete":{
         "health":2500,
-        "cost": 100}
+        "cost": 100
+        }
 }
 # custom events
 e_SCRAPGAIN = pg.USEREVENT + 1

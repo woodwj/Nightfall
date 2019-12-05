@@ -2,7 +2,7 @@ import pygame as pg
 import utils
 import pathlib
 from pathlib import Path
-from settings import *
+import settings
 
 vec = pg.math.Vector2
 
@@ -25,13 +25,13 @@ class mapManager():
         self.height = self.tilesHigh * self.gameScene.state.tileSize
 
 class camera:
-    def __init__(self, gameScene, width, height):
+    def __init__(self, gameScene, totalWidth, totalHeight):
         # creates the camera and imports some settings
         self.gameScene = gameScene
-        self.camera = pg.Rect(0, 0, width, height)
-        self.cSpeed = c_speed
-        self.mapWidth = width
-        self.mapHeight = height
+        self.camera = pg.Rect(0, 0, totalWidth, totalHeight)
+        #self.cSpeed = c_speed
+        self.mapWidth = totalWidth
+        self.mapHeight = totalHeight
         self.offset = vec(0,0)
         self.cam = vec(0,0)
         
@@ -51,9 +51,9 @@ class camera:
     # temporary grid for developmet
     def draw_Grid(self):
         for x in range(int(self.offset.x), self.gameScene.map.width, self.gameScene.state.tileSize):
-            pg.draw.line(self.gameScene.state.screen, WHITE, (x, 0), (x, self.gameScene.map.height))
+            pg.draw.line(self.gameScene.state.screen, settings.WHITE, (x, 0), (x, self.gameScene.map.height))
         for y in range(int(self.offset.y), self.gameScene.map.height, self.gameScene.state.tileSize):
-            pg.draw.line(self.gameScene.state.screen, WHITE, (0, y), (self.gameScene.map.width, y))
+            pg.draw.line(self.gameScene.state.screen, settings.WHITE, (0, y), (self.gameScene.map.width, y))
 
     def update(self, target):
 

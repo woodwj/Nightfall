@@ -48,7 +48,6 @@ class player(tileSprite.tileSprite):
         self.mouse_pos = self.gameScene.mouse_pos
         self.keys = self.gameScene.keys
 
-
         # code for keyboard controls    
         if self.keys[pg.K_LEFT] or self.keys[pg.K_a]:
             self.vel.x += settings.p_speed * -1   
@@ -175,7 +174,7 @@ class zombie(tileSprite.tileSprite):
     def __init__(self, gameScene, tile_x, tile_y):
 
         # for faster coding save to local variable and acess in other class functions
-        self.groups = gameScene.objects.groupAll, gameScene.objects.groupZombies
+        self.groups = gameScene.objects.groupAll, gameScene.objects.groupZombies, gameScene.objects.groupDestructable
         super().__init__(gameScene, tile_x, tile_y, self.groups)
 
         self.action = "idle"
