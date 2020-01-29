@@ -125,13 +125,13 @@ class gameScene:
                 target.health -= bullet.damage
                     
         
-        hits = pg.sprite.spritecollide(self.objects.player, self.objects.groupZombies, False, utils.collideDetect)
-        if hits:
-            for zombie in hits:
-                self.objects.player.health -= zombie.damage
-                if zombie.action != "meleeattack":
-                    zombie.action = "meleeattack"
-                    zombie.animator.newAction("meleeattack")
+        #hits = pg.sprite.spritecollide(self.objects.player, self.objects.groupZombies, False, utils.collideDetect)
+        #if hits:
+            #for zombie in hits:
+                ##self.objects.player.health -= zombie.damage
+                #if zombie.action != "meleeattack":
+                    #zombie.action = "meleeattack"
+                    #zombie.animator.newAction("meleeattack")
 
         
         self.upzombies = len(self.objects.groupZombies.sprites())

@@ -40,38 +40,38 @@ class buildMode(tileSprite.tileSprite):
 
     def controls(self):
 
-        
-        # code for keyboard controls
-        if self.keys[pg.K_UP]:
-            #self.animator.animCount = min(0,min(self.animator.animCount+1,self.animator.animLength-1) - self.animator.animLength-1) * -1
-            self.animator.animCount = (self.animator.animCount + 1) % self.animator.animLength
-            self.animator.animImg = self.animator.animList[self.animator.animCount]
-            self.changeImg() 
-            self.rotate()
+            
+            # code for keyboard controls
+            if self.keys[pg.K_UP]:
+                #self.animator.animCount = min(0,min(self.animator.animCount+1,self.animator.animLength-1) - self.animator.animLength-1) * -1
+                self.animator.animCount = (self.animator.animCount + 1) % self.animator.animLength
+                self.animator.animImg = self.animator.animList[self.animator.animCount]
+                self.changeImg() 
+                self.rotate()
 
-        elif self.keys[pg.K_DOWN]:
-            self.animator.animCount = (self.animator.animCount -1) % self.animator.animLength
-            self.animator.animImg = self.animator.animList[self.animator.animCount]
-            self.changeImg()
-            self.rotate()
+            elif self.keys[pg.K_DOWN]:
+                self.animator.animCount = (self.animator.animCount -1) % self.animator.animLength
+                self.animator.animImg = self.animator.animList[self.animator.animCount]
+                self.changeImg()
+                self.rotate()
 
-        elif self.keys[pg.K_RIGHT]:
-            self.materialIndex = (self.materialIndex +1) % len(self.materials)
-            self.material = self.materials[self.materialIndex]
-            self.animator.newAction(self.material)
-            self.changeImg()
-            self.rotate() 
+            elif self.keys[pg.K_RIGHT]:
+                self.materialIndex = (self.materialIndex +1) % len(self.materials)
+                self.material = self.materials[self.materialIndex]
+                self.animator.newAction(self.material)
+                self.changeImg()
+                self.rotate() 
 
-        elif self.keys[pg.K_LEFT]:
-            self.materialIndex = (self.materialIndex - 1) % len(self.materials)
-            self.material = self.materials[self.materialIndex]
-            self.animator.newAction(self.material)
-            self.changeImg()
-            self.rotate()
+            elif self.keys[pg.K_LEFT]:
+                self.materialIndex = (self.materialIndex - 1) % len(self.materials)
+                self.material = self.materials[self.materialIndex]
+                self.animator.newAction(self.material)
+                self.changeImg()
+                self.rotate()
 
-        elif self.keys[pg.K_r]:
-            self.angle = (self.angle + 90) % 360
-            self.rotate()     
+            elif self.keys[pg.K_r]:
+                self.angle = (self.angle + 90) % 360
+                self.rotate()     
 
                         
     def update(self):

@@ -77,8 +77,6 @@ class player(tileSprite.tileSprite):
         elif self.keys[pg.K_v]:
             actionNew = "meleeattack"
         
-        # events
-        #self.events()
         
         # code to deal with shooting
         if self.mouse_pressed[0] :
@@ -127,13 +125,11 @@ class player(tileSprite.tileSprite):
         if self.animator.animChange:
             self.changeImg()
         
+        
         # change in x and y is calculated off velocity and the change in time
-        self.moveDist = self.vel * self.gameScene.state.del_t
-        self.moveDist = vec(int(self.moveDist.x),int(self.moveDist.y))
-        if self.moveDist.y !=0 or self.moveDist.x !=0:
-            # performs movement
-            self.move()
+        super().update()
         self.rotate()
+        
         
 class Bullet(pg.sprite.Sprite):
     def __init__(self, gameScene, pos, direction, angle, weapon):
@@ -193,7 +189,7 @@ class zombie(tileSprite.tileSprite):
         self.rotate(self.range)
         self.health = settings.z_health
         self.damage = settings.z_damage
-        self.type = "zombie"
+        self.type = "zombie"    
         
    
     def rotate(self, angle = None):
@@ -241,18 +237,14 @@ class zombie(tileSprite.tileSprite):
             self.animator.newAction(self.action)
 
     def update(self):
-
-        if self.health < 0:
-            self.kill()
         
         self.animator.update()
         if self.animator.animChange:
             self.changeImg()
 
         self.detect()
-        self.moveDist = self.vel  * self.gameScene.state.del_t
-        if self.moveDist.x != 0 or self.moveDist.y !=0:
-            self.move()
+        super().update()
+        
+            
 
-        if self.pos.x < 0 or self.pos.y < 0:
-            self.kill()
+        

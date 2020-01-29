@@ -4,7 +4,7 @@ import utils
 vec = pg.math.Vector2
 
 def collideDetect(sprite1,sprite2):
-        return sprite1.col_rect.colliderect(sprite2.col_rect)
+    return sprite1.col_rect.colliderect(sprite2.col_rect)
 
 class tileSprite(pg.sprite.Sprite):
     def __init__(self, gameScene, tile_x, tile_y, groups = []):
@@ -21,56 +21,60 @@ class tileSprite(pg.sprite.Sprite):
             self.moveDist = (0,0)
 
     def move(self):
+
+        direct = ""
         if self.moveDist.x != 0:
             self.pos.x += self.moveDist.x
             self.col_rect.centerx = self.pos.x
-            self.collide_with_walls('x')
+            direct += "x"
         if self.moveDist.y != 0:
             self.pos.y += self.moveDist.y
             self.col_rect.centery = self.pos.y
-            self.collide_with_walls('y')
+            direct += "y"
+
+        if direct != "":
+            self.collide_with_walls(direct)
+
         self.col_rect.center = self.pos
-        self.rect.center = self.col_rect.center
+        self.rect.center = self.col_rect.center        
+        
 
 
-    def collide_with_walls(self, dir):
-        if dir == 'x':
+    def collide_with_walls(self, direct):
+        
             hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, self.collideDetect)
             if hits:
-                # right -> left
-                if self.vel.x > 0:
-                    self.col_rect.right = hits[0].col_rect.left
-                # left -> right
-                if self.vel.x < 0:
-                    self.col_rect.left = hits[0].col_rect.right
-                # fix velocity and rect
+
+                if "x" in direct:
+                    # right -> left
+                    if self.vel.x > 0:
+                        self.col_rect.right = hits[0].col_rect.left
+                    # left -> right
+                    if self.vel.x < 0:
+                        self.col_rect.left = hits[0].col_rect.right
+                    # fix velocity
                     self.vel.x = 0
-
-                self.pos.x = self.col_rect.centerx
-
-                if self.type == "zombie" and self.action != "meleeattack":
-                    self.action = "meleeattack"
-                    self.animator.newAction("meleeattack")
-                    hits[0].health -= self.damage
-
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupWalls, False, self.collideDetect)
-            if hits:
-                # up - > down
-                if self.vel.y > 0:
-                    self.col_rect.bottom = hits[0].col_rect.top
-                # down -> up
-                if self.vel.y < 0:
-                    self.col_rect.top = hits[0].col_rect.bottom
-                # fix velocity and rect
+                    self.rect.centerx = self.pos.x = self.col_rect.centerx
+                
+                if "y" in direct:
+                    
+                    if self.vel.y > 0:
+                        self.col_rect.bottom = hits[0].col_rect.top
+                    # down -> up
+                    if self.vel.y < 0:
+                        self.col_rect.top = hits[0].col_rect.bottom
+                    # fix velocity
                     self.vel.y = 0
+                    self.rect.centery = self.pos.y = self.col_rect.centery
 
-                self.pos.y = self.col_rect.centery
+                #self.pos = vec(self.col_rect.center)
+                self.rect.center = self.col_rect.center
 
                 if self.type == "zombie" and self.action != "meleeattack":
                     self.action = "meleeattack"
                     self.animator.newAction("meleeattack")
                     hits[0].health -= self.damage
+
 
 
     def collideDetect(self,sprite1,sprite2):
@@ -98,6 +102,6 @@ class tileSprite(pg.sprite.Sprite):
             # performs movement
             self.move()
         self.vel = vec(0,0)
-        if self.health < 0:
-            self.kill()
         
+        if self.health < 0 or self.col_rect.left < 0 or self.col_rect.top < 0:
+            self.kill()
