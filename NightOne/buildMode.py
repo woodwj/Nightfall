@@ -15,7 +15,7 @@ class buildMode(tileSprite.tileSprite):
         self.gameScene = gameScene
         self.screenPos = vec(5,5)
         self.pos = vec(0,0)
-        super().__init__(self.gameScene, self.screenPos.x, self.screenPos.y)
+        super().__init__(self.gameScene, topLeft= self.screenPos)
         self.animator = animations.animator(self.gameScene.state.gallery,"wall")
         self.materials = ["wood","plank","stone","brick","concrete"]
         self.materialIndex = 0
@@ -29,14 +29,7 @@ class buildMode(tileSprite.tileSprite):
         self.ogImage = self.image 
         self.delay = pg.time.get_ticks()
         
-    def start(self):
-
-        self.rect.topleft = self.gameScene.objects.player.col_rect.topleft
-        self.col_rect = self.rect
     
-    def end(self):
-
-        self.gameScene.state.FPS = settings.s_FPS
 
     def controls(self):
 
@@ -77,22 +70,19 @@ class buildMode(tileSprite.tileSprite):
     def update(self):
 
         self.keys = self.gameScene.keys
-        self.mousePressed = self.gameScene.mouse_pressed
-        self.mousePos = vec(self.gameScene.mouse_pos)
+        self.mousePressed = self.gameScene.mousePressed
+        self.mousePos = self.gameScene.camera.get_pos(self.gameScene.mousePos)
 
-        self.pos = self.gameScene.camera.get_pos(self.mousePos)
-        self.tile = vec((self.pos.x // self.gameScene.state.tileSize),(self.pos.y // self.gameScene.state.tileSize))
-        self.pos = self.tile * self.gameScene.state.tileSize
+        self.pos = vec((self.mousePos.x // self.gameScene.state.tileSize),(self.mousePos.y // self.gameScene.state.tileSize)) *self.gameScene.state.tileSize
         if self.angle < 180:
             self.rect.topleft = self.pos
         else:
             self.rect.bottomright = self.pos + self.tilesize
         self.col_rect = self.rect
-        realpos = self.col_rect.topleft
        
         hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupAll, False, collideDetect)
         if self.mousePressed[0] and not hits and self.scrap - settings.bm_objects[self.material]["cost"] >= 0:    
-            environments.wall(self.gameScene,self.tile.x,self.tile.y,self.image,self.material,realpos)
+            environments.playerWall(self.gameScene,self.image,self.material,self.col_rect.topleft)
             self.scrap -= settings.bm_objects[self.material]["cost"]
             self.gameScene.scrapTxt = "SCRAP: " + str(self.scrap)
 

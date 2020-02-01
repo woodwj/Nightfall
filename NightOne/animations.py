@@ -53,19 +53,10 @@ class animator():
         now = pg.time.get_ticks()
         if now - self.displayedTime > self.animSpeed:
             self.displayedTime = now
+            self.animCount = (self.animCount +1) % self.animLength 
+            self.animImg = self.animList[self.animCount]
             self.animChange = True
         else:
             self.animChange = False
-
-        if self.animChange:    
-            if self.animDirection == "up" and self.animCount < self.animLength-1:
-                self.animCount += 1
-            else:
-               self.animDirection = "down"     
-            if self.animDirection == "down" and self.animCount > 0 :
-               self.animCount -= 1
-            else:
-               self.animDirection = "up"
         
-        self.animImg = self.animList[self.animCount]
         

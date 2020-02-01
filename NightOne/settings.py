@@ -30,14 +30,14 @@ p_speed = 300
 p_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
 p_weapon = "handgun"
 p_action = "idle"
-p_barrelOffset = vec(p_collisionRect.bottomright) *0.4
+p_barrelOffset = vec(p_collisionRect.bottomright) *0.375
 p_health = 500
 
 # bullet settings
 guns = {
     "handgun":{
-        "b_speed" : 450,
-        "b_spread" : 5,
+        "b_speed" : 500,
+        "b_spread" : 2,
         "b_lifeTime" : 10000,
         "b_rate" : 200,
         "b_kickback" : 200,
@@ -45,8 +45,8 @@ guns = {
         },
 
     "shotgun":{
-        "b_speed" : 250,
-        "b_spread" : 120,
+        "b_speed" : 500,
+        "b_spread" : 8,
         "b_lifeTime" : 10000,
         "b_rate" : 700,
         "b_kickback" : 500,
@@ -54,8 +54,8 @@ guns = {
         },
         
     "rifle":{
-        "b_speed" : 300,
-        "b_spread" : 5,
+        "b_speed" : 500,
+        "b_spread" : 4,
         "b_lifeTime" : 10000,
         "b_rate" : 300,
         "b_kickback" : 300,
@@ -67,7 +67,7 @@ guns = {
 r_countdown = 15
 # zombie settings
 z_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
-z_speed = 100
+z_speed = 200
 z_action = "idle"
 z_range = [400,700]
 z_health = 500
@@ -103,7 +103,7 @@ bm_objects = {
         }
 }
 # custom events
-e_SCRAPGAIN = pg.USEREVENT + 1
+e_MATERIALGAIN = pg.USEREVENT + 1
 e_ROUNDSTART = pg.USEREVENT + 2
 e_ROUNDCOUNTDOWN = pg.USEREVENT + 3
 
