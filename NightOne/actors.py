@@ -5,7 +5,8 @@ import pathlib
 import animations
 import settings
 import tileSprite
-from random import uniform,randint
+import pathfinding
+from random import uniform,randint,choice
 
 vec = pg.math.Vector2
 
@@ -15,14 +16,15 @@ class player(tileSprite.tileSprite):
         super().__init__(gameScene, self.groups, topLeft = topLeft)
         # image #
         self.animator = animations.animator(self.gameScene.state.gallery, "player")
-        self.animator.newAction(settings.p_action, settings.p_weapon)
+        self.animator.changeAnim("idle", "handgun")
         self.changeImg()
         self.col_rect = settings.p_collisionRect
         # movement #
         self.moveType = "dynamic"
-        self.vel =self.screenPos = vec(0,0) 
+        self.vel =self.screenPos = vec(0,0)
+        self.speed = settings.p_speed
         # gameplay #
-        self.action, self.weapon = settings.p_action, settings.p_weapon
+        self.action, self.weapon = "idle", "handgun"
         self.last_shot = 0
         # player settings #
         self.health = settings.p_health
@@ -31,40 +33,38 @@ class player(tileSprite.tileSprite):
     # controls: movements, actions #
     def controls(self):
         # refresh keys, mousePos,mousePresses #
-        actionNew, weaponNew = self.action, self.weapon
+        self.actionNew, self.weaponNew = self.action, self.weapon
         self.mousePressed = self.gameScene.mousePressed
         self.mousePos = self.gameScene.mousePos
         self.keys = self.gameScene.keys
         # movement #
         self.vel = vec(0,0)    
         if self.keys[pg.K_LEFT] or self.keys[pg.K_a]:
-            self.vel.x += settings.p_speed * -1
+            self.vel.x += self.speed * -1
         elif self.keys[pg.K_RIGHT] or self.keys[pg.K_d]:
-            self.vel.x += settings.p_speed
+            self.vel.x += self.speed
         if self.keys[pg.K_UP] or self.keys[pg.K_w]:
-            self.vel.y += settings.p_speed * -1
+            self.vel.y += self.speed * -1
         elif self.keys[pg.K_DOWN] or self.keys[pg.K_s]:
-            self.vel.y += settings.p_speed
+            self.vel.y += self.speed
             
         # no move: anim ~> idle #
-        if self.vel == (0,0):
-            actionNew = "idle"
-        else:# move: anim ~> move #
-            actionNew = "move"
-            # bi-move: pythag adjust #
-            if self.vel.y !=0 and self.vel.x !=0:   
-                self.vel *= 0.7071
+        self.actionNew = "move"
+        if self.vel.y !=0 and self.vel.x !=0:   
+            self.vel *= 0.7071
+        else: self.actionNew = "idle"
+            
         # actions #
         if self.keys[pg.K_1]:
-            weaponNew = "handgun"
+            self.weaponNew = "handgun"
         elif self.keys[pg.K_2]:
-            weaponNew = "rifle"
+            self.weaponNew = "rifle"
         elif self.keys[pg.K_3]:
-            weaponNew = "shotgun"
+            self.weaponNew = "shotgun"
         elif self.keys[pg.K_r]:
-            actionNew = "reload"
+            self.actionNew = "reload"
         elif self.keys[pg.K_v]:
-            actionNew = "meleeattack"
+            self.actionNew = "meleeattack"
         # shooting #
         if self.mousePressed[0]:
             # fire rate check
@@ -72,20 +72,7 @@ class player(tileSprite.tileSprite):
             if now - self.last_shot > settings.guns[self.weapon]["b_rate"]:
                 self.last_shot = now
                 self.fire()
-                actionNew = "shoot"
-        # animations continious #
-        change = False
-        if actionNew != self.action or weaponNew != self.weapon:
-            change = True
-            if self.action == "shoot" or self.action == "reload" or self.action == "meleeattack":
-                change = False
-                if self.animator.animCount == self.animator.animLength-1:
-                    change = True
-        # animation change#
-            if change:
-                self.action = actionNew
-                self.weapon = weaponNew
-                self.animator.newAction(self.action, self.weapon)
+                self.actionNew = "shoot"
 
     # rotate towards the mouse
     def rotate(self, angle = None):
@@ -101,8 +88,7 @@ class player(tileSprite.tileSprite):
         position = self.pos + settings.p_barrelOffset.rotate(-self.angle)
         # shotgun burst
         if self.weapon == "shotgun": 
-            kb = settings.guns[self.weapon]["b_kickback"]
-            for burst in range(-kb,kb, 80):
+            for burst in range(0,5):
                 Bullet(self.gameScene, position, direction, self.angle, self.weapon)
         # carbine bullets        
         else: Bullet(self.gameScene, position, direction, self.angle, self.weapon)
@@ -110,11 +96,19 @@ class player(tileSprite.tileSprite):
 
     def update(self):
         self.controls()
-        self.animator.update()
-        if self.animator.animChange:
-            self.changeImg()
         super().update()
-        self.rotate()
+
+        if self.checkAction(self.actionNew, self.weaponNew):
+            # animation change
+            self.action = self.actionNew
+            self.weapon = self.weaponNew
+            self.animator.changeAnim(self.action, self.weapon)
+
+        self.animator.update()
+        if self.animator.nextChange:
+            self.changeImg()
+        else: self.rotate()
+        
 
 class Bullet(tileSprite.tileSprite):
     def __init__(self, gameScene, pos, direction, angle, weapon):
@@ -133,7 +127,7 @@ class Bullet(tileSprite.tileSprite):
         self.angle = angle + spread
         # image #
         self.animator = animations.animator(self.gameScene.state.gallery,"bullet")
-        self.animator.newAction(weapon = self.weapon)
+        self.animator.changeAnim(weapon = self.weapon)
         self.image = self.ogImage = pg.transform.scale(self.animator.animImg, (int(self.gameScene.state.tileSize*0.7),int(self.gameScene.state.tileSize*0.3)))
         self.rotate(self.angle)    
         
@@ -148,87 +142,85 @@ class zombie(tileSprite.tileSprite):
     def __init__(self, gameScene, topLeft):
         self.groups = [gameScene.objects.groupAll, gameScene.objects.groupZombies]
         super().__init__(gameScene, self.groups, topLeft = topLeft)
-
+        # visuals #
         self.animator = animations.animator(self.gameScene.state.gallery,"zombie")
-        self.animator.newAction("idle")
+        self.animator.changeAnim("idle")
         self.action = "idle"
         self.changeImg()
-
+        # movement #
         self.rect = self.image.get_rect(topleft = self.pos)
         self.col_rect = settings.z_collisionRect.copy()
         self.col_rect.center = self.rect.center
-
-        self.attack = False
-        self.range = randint(settings.z_range[0],settings.z_range[1])
-        self.rotate(self.range)
+        self.moveType = "dynamic"
+        self.speed = choice(settings.z_speeds)
+        self.radius = settings.z_radius
+        self.pathType = choice(["follower","follower","follower", "finder"])
+        # gameplay #
+        self.rotate()
         self.health = settings.z_health
         self.damage = settings.z_damage
         self.actorType = "zombie"
-        self.moveType = "dynamic"   
-        
-   
+        self.tickpath = 10000
+        self.lastpath = 0
+           
     def rotate(self, angle = None):
         if angle == None: angle = (self.gameScene.objects.player.pos - self.pos).angle_to(vec(1, 0))
         super().rotate(angle)
     
+    def avoidMobs(self):
+        for mob in self.gameScene.objects.groupZombies:
+            if mob.ID != self.ID:
+                dist = self.pos - mob.pos
+                if 0 < dist.length() < self.radius:
+                    self.vel += (dist.normalize()* -self.speed)
 
-    def chase(self):
-        self.actionNew = "idle"
-        self.vel = vec(0,0)
-    # x axis
-        # left ~> right #
-        if self.col_rect.right < self.gameScene.objects.player.col_rect.left:
-            self.vel.x = settings.z_speed
-            self.actionNew = "move"
-        # right ~> left #    
-        elif self.col_rect.left > self.gameScene.objects.player.col_rect.right:
-            self.vel.x = settings.z_speed * -1
-            self.actionNew = "move"
-
-    # y axis
-        # up ~> down #
-        if self.col_rect.bottom < self.gameScene.objects.player.col_rect.top:
-            self.vel.y = settings.z_speed
-            self.actionNew = "move"
-        # down ~> up #
-        elif self.col_rect.top < self.gameScene.objects.player.col_rect.bottom:
-            self.vel.y = settings.z_speed * -1
-            self.actionNew = "move"
-        
-        
-        if self.vel.y !=0 and self.vel.x !=0:
-            self.vel *= 0.7071
-            self.vel = vec(int(self.vel.x), int(self.vel.y))
-
-                           
+    def navPath(self):
+        current = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
+        target = self.maptoGrid(vec(self.col_rect.center))
+        foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, target, current)
+        path = []
+        while current != target:
+            toCurrent = foundPath[utils.vec2int(current)]
+            path.append(toCurrent)
+            current -= toCurrent
+        path.reverse()
+        if path == []: path = [vec(0,0)]
+        return path
 
     def controls(self):
-
-        self.actionNew = "idle"        
-        self.chase()
-        self.rotate()
-    
-        change = False
-        if self.actionNew != self.action:
-            change = True
-            if self.action == "meleeattack":
-                change = False
-                if self.animator.animCount == self.animator.animLength-1:
-                    change = True
-                    
-        if change:
-            self.action = self.actionNew
-            self.animator.newAction(self.action)
+        self.vel = vec(0,0)
+        path = self.navPath()
+        self.vel = path[0].normalize() * self.speed
+    # pythag speed adjustment #
+        self.actionNew = "move"
+        if self.vel.y !=0 and self.vel.x !=0:
+            self.vel *= 0.7071
+        elif self.vel == vec(0,0): self.actionNew = "idle"
+        self.vel = vec(int(self.vel.x), int(self.vel.y))
+            
+    def draw_health(self):
+        # colours #
+        healthPerHex = int(max(self.health,0) / settings.z_health * 255)
+        col = (255-healthPerHex, healthPerHex, 0)
+        # health bar #
+        width = int(self.col_rect.width * self.health / settings.z_health)
+        self.health_bar = pg.Rect(0, 0, width, 5)
+        if self.health < settings.z_health:
+            pg.draw.rect(self.image, col, self.health_bar)
+            pg.draw.rect(self.image, settings.BLACK, self.health_bar,1)
 
     def update(self):
-        
-        self.animator.update()
-        if self.animator.animChange:
-            self.changeImg()
-
         self.controls()
+        self.rotate()
+        self.avoidMobs()
         super().update()
-        
-            
 
+        if self.checkAction(self.actionNew):
+            self.action = self.actionNew
+            self.animator.changeAnim(self.actionNew)
+        self.animator.update()
+        if self.animator.nextChange:
+            self.changeImg()
+        
+        
         
