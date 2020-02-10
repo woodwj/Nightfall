@@ -6,10 +6,8 @@ from pathlib import Path
 class gallery():
     def __init__(self, gameState):
         self.gameState = gameState
-        #self.baseFolder = pathlib.Path.cwd()
         self.artFolder = pathlib.Path.cwd() / "art"
         self.art = self.ripArt(self.artFolder)
-        
     def ripArt(self,baseDir):
         returnStruct = {}
         for path in baseDir.iterdir():
@@ -20,10 +18,9 @@ class gallery():
                 elif path.stem == "v":
                     img = pg.transform.scale(img, (int(self.gameState.tileSize*0.3), self.gameState.tileSize))    
                 else:
-                    img = pg.transform.scale(img, (self.gameState.tileSize * settings.sp_scale, self.gameState.tileSize *settings.sp_scale))
+                    img = pg.transform.scale(img, (int(self.gameState.tileSize * settings.sp_scale), int(self.gameState.tileSize *settings.sp_scale)))
                 returnStruct[path.stem] = (img)
             elif path.is_dir():
                 returnStruct[path.stem] =  self.ripArt(path)
-
         return returnStruct
 

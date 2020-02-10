@@ -6,6 +6,7 @@ import environments
 import buildMode
 import gallery
 import utils
+import pathfinding
 import pathlib
 from random import choice
 import settings
@@ -33,27 +34,30 @@ class gameScene:
         self.map = grid.mapManager(self)
         self.camera = grid.camera(self, self.map.width, self.map.height)
         self.objects.spawners = []
+        self.graph = grid.weightedGrid(self,self.map.width,self.map.height)
 
         # map parsing #
         for rowIndex, tiles in enumerate(self.map.data):
             for collumIndex, tile in enumerate(tiles):
                 # cordinates  using row and collum index
                 topLeft = vec(collumIndex,rowIndex) * self.state.tileSize
+                self.graph.weights[utils.tup(topLeft)] = settings.t_weight
                 # wall sprite #
                 if tile == 'w':
                     environments.wall(self, topLeft)
+                    self.graph.walls.append(utils.tup(topLeft))
                 # player sprite #
-                if tile == 'P':
+                elif tile == 'P':
                     self.objects.player = actors.player(self, topLeft)
                 # zombie sprite #
-                if tile == "Z":
+                elif tile == "Z":
                     actors.zombie(self, topLeft)
                 # spawner tile #
-                if tile == "s":
+                elif tile == "s":
                     self.objects.spawners.append(topLeft)
-        
+
         # initilize text
-        self.materialsTxt = "MATERIALS: " + str(self.objects.buildMode.scrap)
+        self.materialsTxt = "MATERIALS: " + str(self.objects.buildMode.buildPoints)
 
     # events each gameloop #
     def events(self):
@@ -63,7 +67,7 @@ class gameScene:
             if event.type == pg.QUIT:
                 pg.quit()
             # key events #
-            if event.type == pg.KEYDOWN:
+            if event.type == pg.KEYUP:
                 # Esc ~> quit #
                 if event.key == pg.K_ESCAPE:
                     self.gameLoop = False
@@ -74,8 +78,8 @@ class gameScene:
             # scrap gain #
             if event.type == settings.e_MATERIALGAIN:
                 if not self.state.bMode:
-                    self.objects.buildMode.scrap += 1
-                    self.materialsTxt = "MATERIALS: " + str(self.objects.buildMode.scrap)
+                    self.objects.buildMode.buildPoints += 1
+                    self.materialsTxt = "MATERIALS: " + str(self.objects.buildMode.buildPoints)
             # round start #
             if event.type == settings.e_ROUNDSTART:
                 self.state.round = True
@@ -94,18 +98,19 @@ class gameScene:
                         ROUNDSTART = pg.event.Event(settings.e_ROUNDSTART, roundnumber = self.state.roundnumber)
                         pg.event.post(ROUNDSTART)
                         self.state.countdown = settings.r_countdown
-    
-    # draw backround -> grid -> sprites -> text #
+    # draw backround -> grid -> spridtes -> text #
     def draw(self):
         # backround #
         self.state.screen.fill(settings.bgColour)
         # grid #
         if self.state.bMode:
             self.camera.draw_Grid()
-            self.state.screen.blit(self.objects.buildMode.image, self.camera.apply(self.objects.buildMode))
+            self.state.screen.blit(self.objects.buildMode.image, self.camera.applySprite(self.objects.buildMode))
         # camera-adjusted sprites #
         for sprite in self.objects.groupAll:
-            self.state.screen.blit(sprite.image, self.camera.apply(sprite))
+            if sprite.actorType == "zombie":
+                sprite.draw_health()
+            self.state.screen.blit(sprite.image, self.camera.applySprite(sprite))
         # text #
         self.state.screen.blit(self.state.font.render(self.materialsTxt, True, settings.WHITE),(10,10))
         self.state.screen.blit(self.state.font.render(self.roundTxt, True, settings.WHITE),(10,self.state.tileSize *1))
@@ -123,29 +128,31 @@ class gameScene:
         else: # update all sprites and track camera to player #
             self.camera.update(self.objects.player)
             self.objects.groupAll.update()
-        # if zombie kill and more zombies this round ~> spawn new zombie #
-        self.upzombies = len(self.objects.groupZombies.sprites())
-        if self.upzombies < self.state.maxzombies and self.state.roundzombies > 0:
+        # if zombies killed and more zombies this round ~> spawn new zombie #
+        self.state.upZombies = len(self.objects.groupZombies.sprites())
+        if self.state.upZombies < self.state.maxzombies and self.state.roundzombies > 0 and len(self.objects.spawners) > 0:
             spawn = choice(self.objects.spawners)        
             actors.zombie(self, spawn)
             self.state.roundzombies -= 1
-            self.upzombies += 1
-        # end of round handling #  
-        if self.upzombies <= 0 and self.state.round:
+            self.state.upZombies += 1
+        # roundEnd handling #  
+        if self.state.upZombies <= 0 and self.state.round:
             self.state.round = False
             pg.time.set_timer(settings.e_ROUNDCOUNTDOWN, 1000)          
 
 # structure to hold sprites #
 class gameObjects:
     def __init__(self):
+        # IDs #
+        self.spriteID = []
         # groups #
         self.groupAll = pg.sprite.Group()
         self.groupWalls = pg.sprite.Group()
         self.groupZombies = pg.sprite.Group()
         self.groupBullets = pg.sprite.Group()
         # targets #
-        self.bTargets = ["wall", "zombie"]
-        self.zTargets = ["player","wall"]
+        self.bTargets = ["zombie", "wall","playerWall"]
+        self.zTargets = ["player","playerWall"]
 
 # structure to hold constants #
 class gameState:
@@ -167,26 +174,23 @@ class gameState:
         self.maxzombies = settings.z_maxzombies
         self.countdown = settings.r_countdown
         self.round = False
+        self.upZombies = 0
         # art #
         self.gallery = gallery.gallery(self)
         self.bMode = False
-
 #~~MAIN~~#
 # instatiate #
 Game = gameScene()
-pg.key.set_repeat(1, 10) 
 # gain materials /s #
 pg.time.set_timer(settings.e_MATERIALGAIN, 1000)
 # start round #
 ROUNDSTART = pg.event.Event(settings.e_ROUNDSTART, roundnumber = 0)
 pg.event.post(ROUNDSTART)
-
 # gameLoop #
 while Game.gameLoop:
     Game.state.del_t = Game.clock.tick(Game.state.FPS) / 1000
     Game.events()
     Game.update()
     Game.draw()
-    
 # Close the window and quit.
 pg.quit()
