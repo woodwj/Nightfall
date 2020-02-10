@@ -128,14 +128,14 @@ class gameScene:
         else: # update all sprites and track camera to player #
             self.camera.update(self.objects.player)
             self.objects.groupAll.update()
-        # if zombies killed and more zombies this round ~> spawn new zombie #
+        # if zombie kill and more zombies this round ~> spawn new zombie #
         self.state.upZombies = len(self.objects.groupZombies.sprites())
         if self.state.upZombies < self.state.maxzombies and self.state.roundzombies > 0 and len(self.objects.spawners) > 0:
             spawn = choice(self.objects.spawners)        
             actors.zombie(self, spawn)
             self.state.roundzombies -= 1
             self.state.upZombies += 1
-        # roundEnd handling #  
+        # end of round handling #  
         if self.state.upZombies <= 0 and self.state.round:
             self.state.round = False
             pg.time.set_timer(settings.e_ROUNDCOUNTDOWN, 1000)          
@@ -181,6 +181,7 @@ class gameState:
 #~~MAIN~~#
 # instatiate #
 Game = gameScene()
+pg.key.set_repeat(1, 10) 
 # gain materials /s #
 pg.time.set_timer(settings.e_MATERIALGAIN, 1000)
 # start round #

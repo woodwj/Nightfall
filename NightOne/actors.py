@@ -151,18 +151,17 @@ class zombie(tileSprite.tileSprite):
         self.moveType = "dynamic"
         self.speed = choice(settings.z_speeds)
         self.radius = settings.z_radius
-        # pathfinding #
-        self.tickPathCalc = 5000
-        self.sincePathCalc = 0
-        self.lastTarget = None
-        target, start = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center)), self.maptoGrid(vec(self.col_rect.center))
-        self.foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, start, target)
+        self.pathType = choice(["follower","follower","follower", "finder"])
+        self.lastPos = vec(0,0)
+        self.tickpath = 5000
+        self.lastPathCalc = 0
         # gameplay #
         self.rotate()
         self.health = settings.z_health
         self.damage = settings.z_damage
         self.actorType = "zombie"
         
+           
     def rotate(self, angle = None):
         if angle == None: angle = (self.gameScene.objects.player.pos - self.pos).angle_to(vec(1, 0))
         super().rotate(angle)
@@ -174,11 +173,13 @@ class zombie(tileSprite.tileSprite):
                 if 0 < dist.length() < self.radius:
                     self.vel += dist.normalize()
 
-    def navPath(self, start, target):
-        pos = target
+    def navPath(self):
+        pos = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
+        target = self.maptoGrid(vec(self.col_rect.center))
+        foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, target, pos)
         path = []
-        while pos != start:
-            currentNode = self.foundPath.get(utils.tup(pos),None)
+        while pos != target:
+            currentNode = foundPath.get(utils.tup(pos),None)
             if currentNode == None: break
             pos, move = currentNode["from"], currentNode["direct"]
             path.append(move*-1)
@@ -186,29 +187,21 @@ class zombie(tileSprite.tileSprite):
         return path
 
     def controls(self):
+        pos = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
+        target = self.maptoGrid(vec(self.col_rect.center))
         self.vel = vec(0,0)
-        target = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
-        if self.lastTarget == None: self.lastTarget = target
-        start = self.maptoGrid(vec(self.col_rect.center))
         now = pg.time.get_ticks()
-        if now - self.sincePathCalc > self.tickPathCalc:
-            self.sincePathCalc = now
-            self.foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, start, target)
-        elif target != self.lastTarget:
-            extraPath =  pathfinding.a_star_algorithm(self.gameScene.graph, self.lastTarget, target)
-            for coord in extraPath:
-                newNode, oldNode = extraPath[coord], self.foundPath.get(coord)
-                if newNode == None: newNode = oldNode
-                self.foundPath[coord] = extraPath[coord]
-        shortestPath = self.navPath(start, target)
-                
-        if shortestPath == []: self.vel = vec(0,0)
-        else: self.vel = utils.intVec(shortestPath[0].normalize() * self.speed)
+        if self.lastPath - now < 0:
+            self.lastPath = now
+            path = self.navPath()
+        else:
+
+        if path == []: self.vel = vec(0,0)
+        else: self.vel = utils.intVec(path[0].normalize() * self.speed)
     # pythag speed adjustment #
         self.actionNew = "move"
         if self.vel == vec(0,0): self.actionNew = "idle"
         self.vel = vec(int(self.vel.x), int(self.vel.y))
-        self.lastTarget = target
             
     def draw_health(self):
         # colours #
@@ -225,9 +218,9 @@ class zombie(tileSprite.tileSprite):
         self.controls()
         self.rotate()
         self.avoidMobs()
-        #print("pre-move: ",self.col_rect.center, ", vel: ",self.vel)
+        print("pre-move: ",self.col_rect.center, ", vel: ",self.vel)
         super().update()
-        #print( "post-move:",self.col_rect.center, ", vel: ",self.vel)
+        print( "post-move:",self.col_rect.center, ", vel: ",self.vel)
 
         if self.checkAction(self.actionNew):
             self.action = self.actionNew
