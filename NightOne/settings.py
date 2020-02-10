@@ -36,7 +36,7 @@ p_health = 500
 # bullet settings
 guns = {
     "handgun":{
-        "b_speed" : 500,
+        "b_speed" : 800,
         "b_spread" : 2,
         "b_lifeTime" : 10000,
         "b_rate" : 200,
@@ -45,7 +45,7 @@ guns = {
         },
 
     "shotgun":{
-        "b_speed" : 500,
+        "b_speed" : 800,
         "b_spread" : 8,
         "b_lifeTime" : 10000,
         "b_rate" : 700,
@@ -54,7 +54,7 @@ guns = {
         },
         
     "rifle":{
-        "b_speed" : 500,
+        "b_speed" : 800,
         "b_spread" : 4,
         "b_lifeTime" : 10000,
         "b_rate" : 300,

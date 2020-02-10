@@ -100,9 +100,8 @@ class player(tileSprite.tileSprite):
         direction = vec(1,0).rotate(-self.angle)
         position = self.pos + settings.p_barrelOffset.rotate(-self.angle)
         # shotgun burst
-        if self.weapon == "shotgun": 
-            kb = settings.guns[self.weapon]["b_kickback"]
-            for burst in range(-kb,kb, 80):
+        if self.weapon == "shotgun":
+            for burst in range(0,5):
                 Bullet(self.gameScene, position, direction, self.angle, self.weapon)
         # carbine bullets        
         else: Bullet(self.gameScene, position, direction, self.angle, self.weapon)
