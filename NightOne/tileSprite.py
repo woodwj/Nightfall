@@ -127,8 +127,8 @@ class tileSprite(pg.sprite.Sprite):
     def update(self):
         # change in x and y is calculated off velocity and the change in time
         if self.moveType == "dynamic":
-            self.moveDist = self.vel * (self.gameScene.state.del_t%1)
-            self.moveDist = vec(int(self.moveDist.x),int(self.moveDist.y))
+            self.moveDist = self.vel * (self.gameScene.state.del_t%0.5)
+            self.moveDist = utils.intVec(self.moveDist)
             if self.moveDist.y !=0 or self.moveDist.x !=0:
                 # performs movement
                 self.move()

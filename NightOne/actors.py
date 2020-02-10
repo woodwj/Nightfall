@@ -174,19 +174,20 @@ class zombie(tileSprite.tileSprite):
                 if 0 < dist.length() < self.radius:
                     self.vel += dist.normalize()
 
-    def navPath(self, start, target):
+    def navPath(self, path, start, target):
         pos = target
-        path = []
+        shortestPath = []
         while pos != start:
-            currentNode = self.foundPath.get(utils.tup(pos),None)
+            currentNode = path.get(utils.tup(pos),None)
             if currentNode == None: break
-            pos, move = currentNode["from"], currentNode["direct"]
-            path.append(move*-1)
-        path.reverse()
-        return path
+            pos, move = currentNode["from"], -currentNode["direct"]
+            shortestPath.append(move)
+        shortestPath.reverse()
+        return shortestPath
 
     def controls(self):
         self.vel = vec(0,0)
+        shortestPath = []
         target = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
         if self.lastTarget == None: self.lastTarget = target
         start = self.maptoGrid(vec(self.col_rect.center))
@@ -194,13 +195,11 @@ class zombie(tileSprite.tileSprite):
         if now - self.sincePathCalc > self.tickPathCalc:
             self.sincePathCalc = now
             self.foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, start, target)
-        elif target != self.lastTarget:
+        shortestPath = self.navPath(self.foundPath, start, self.lastTarget)
+        if target != self.lastTarget:
             extraPath =  pathfinding.a_star_algorithm(self.gameScene.graph, self.lastTarget, target)
-            for coord in extraPath:
-                newNode, oldNode = extraPath[coord], self.foundPath.get(coord)
-                if newNode == None: newNode = oldNode
-                self.foundPath[coord] = extraPath[coord]
-        shortestPath = self.navPath(start, target)
+            ret = self.navPath(extraPath,self.lastTarget,target)
+            shortestPath.extend(ret)
                 
         if shortestPath == []: self.vel = vec(0,0)
         else: self.vel = utils.intVec(shortestPath[0].normalize() * self.speed)

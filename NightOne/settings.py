@@ -13,8 +13,8 @@ BLACK = (0,0,0)
 GREY = (65,65,65)
 bgColour = GREY
 # screen Settings
-s_screenWidth = 800
-s_screenHeight = 500
+s_screenWidth = 1920
+s_screenHeight = 1080
 s_FPS = 120
 s_title = "NightOne"
 s_tileSize = 48
