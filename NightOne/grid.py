@@ -45,9 +45,9 @@ class weightedGrid:
 
     def cost(self, from_node, to_node):
         if (vec(to_node) - vec(from_node)).length_squared() == 1:
-            return self.weights.get(to_node, 1) + 14
+            return self.weights.get(to_node, settings.t_weight) +  int(1.414 * self.gameScene.state.tileSize)
         else:
-            return self.weights.get(to_node, 1) + 10
+            return self.weights.get(to_node, settings.t_weight) + self.gameScene.state.tileSize
 
 class camera:
     def __init__(self, gameScene, totalWidth, totalHeight):
@@ -82,7 +82,6 @@ class camera:
     def update(self, target):
         # set targets real position on the screen for target's use
         target.screenPos = self.applyVec(vec(target.col_rect.center))
-        
         # track target # 
         x = -target.rect.centerx + int(self.gameScene.state.screenWidth*0.5)
         y = -target.rect.centery + int(self.gameScene.state.screenHeight*0.5)

@@ -41,11 +41,11 @@ class gameScene:
             for collumIndex, tile in enumerate(tiles):
                 # cordinates  using row and collum index
                 topLeft = vec(collumIndex,rowIndex) * self.state.tileSize
-                self.graph.weights[utils.vec2int(topLeft)] = settings.t_weight
+                self.graph.weights[utils.tup(topLeft)] = settings.t_weight
                 # wall sprite #
                 if tile == 'w':
                     environments.wall(self, topLeft)
-                    self.graph.walls.append(utils.vec2int(topLeft))
+                    self.graph.walls.append(utils.tup(topLeft))
                 # player sprite #
                 elif tile == 'P':
                     self.objects.player = actors.player(self, topLeft)
@@ -55,10 +55,9 @@ class gameScene:
                 # spawner tile #
                 elif tile == "s":
                     self.objects.spawners.append(topLeft)
-                
 
         # initilize text
-        self.materialsTxt = "MATERIALS: " + str(self.objects.buildMode.scrap)
+        self.materialsTxt = "MATERIALS: " + str(self.objects.buildMode.buildPoints)
 
     # events each gameloop #
     def events(self):
@@ -79,8 +78,8 @@ class gameScene:
             # scrap gain #
             if event.type == settings.e_MATERIALGAIN:
                 if not self.state.bMode:
-                    self.objects.buildMode.scrap += 1
-                    self.materialsTxt = "MATERIALS: " + str(self.objects.buildMode.scrap)
+                    self.objects.buildMode.buildPoints += 1
+                    self.materialsTxt = "MATERIALS: " + str(self.objects.buildMode.buildPoints)
             # round start #
             if event.type == settings.e_ROUNDSTART:
                 self.state.round = True
@@ -99,7 +98,7 @@ class gameScene:
                         ROUNDSTART = pg.event.Event(settings.e_ROUNDSTART, roundnumber = self.state.roundnumber)
                         pg.event.post(ROUNDSTART)
                         self.state.countdown = settings.r_countdown
-    # draw backround -> grid -> sprites -> text #
+    # draw backround -> grid -> spridtes -> text #
     def draw(self):
         # backround #
         self.state.screen.fill(settings.bgColour)
@@ -109,7 +108,7 @@ class gameScene:
             self.state.screen.blit(self.objects.buildMode.image, self.camera.applySprite(self.objects.buildMode))
         # camera-adjusted sprites #
         for sprite in self.objects.groupAll:
-            if sprite.actorType == "zombie" :
+            if sprite.actorType == "zombie":
                 sprite.draw_health()
             self.state.screen.blit(sprite.image, self.camera.applySprite(sprite))
         # text #
@@ -130,14 +129,14 @@ class gameScene:
             self.camera.update(self.objects.player)
             self.objects.groupAll.update()
         # if zombie kill and more zombies this round ~> spawn new zombie #
-        self.upzombies = len(self.objects.groupZombies.sprites())
-        if self.upzombies < self.state.maxzombies and self.state.roundzombies > 0 and len(self.objects.spawners) > 0:
+        self.state.upZombies = len(self.objects.groupZombies.sprites())
+        if self.state.upZombies < self.state.maxzombies and self.state.roundzombies > 0 and len(self.objects.spawners) > 0:
             spawn = choice(self.objects.spawners)        
             actors.zombie(self, spawn)
             self.state.roundzombies -= 1
-            self.upzombies += 1
+            self.state.upZombies += 1
         # end of round handling #  
-        if self.upzombies <= 0 and self.state.round:
+        if self.state.upZombies <= 0 and self.state.round:
             self.state.round = False
             pg.time.set_timer(settings.e_ROUNDCOUNTDOWN, 1000)          
 
@@ -175,10 +174,10 @@ class gameState:
         self.maxzombies = settings.z_maxzombies
         self.countdown = settings.r_countdown
         self.round = False
+        self.upZombies = 0
         # art #
         self.gallery = gallery.gallery(self)
         self.bMode = False
-
 #~~MAIN~~#
 # instatiate #
 Game = gameScene()

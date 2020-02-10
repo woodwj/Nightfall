@@ -20,7 +20,7 @@ s_title = "NightOne"
 s_tileSize = 48
 s_font = pg.font.SysFont('Consolas', 28)
 # tile setting #
-t_weight = 0
+t_weight = s_tileSize
 # camera setting
 c_speed = 0.05
 # sprite settings
@@ -65,7 +65,7 @@ guns = {
 r_countdown = 10
 # zombie settings
 z_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
-z_speeds = [100,150,200,250,300]
+z_speeds = [100,150,200,250]
 z_health = 750
 z_maxzombies = 30
 z_damage = 100

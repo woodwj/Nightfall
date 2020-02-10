@@ -40,19 +40,16 @@ class player(tileSprite.tileSprite):
         # movement #
         self.vel = vec(0,0)    
         if self.keys[pg.K_LEFT] or self.keys[pg.K_a]:
-            self.vel.x += self.speed * -1
+            self.vel.x += -1
         elif self.keys[pg.K_RIGHT] or self.keys[pg.K_d]:
-            self.vel.x += self.speed
+            self.vel.x += 1
         if self.keys[pg.K_UP] or self.keys[pg.K_w]:
-            self.vel.y += self.speed * -1
+            self.vel.y += -1
         elif self.keys[pg.K_DOWN] or self.keys[pg.K_s]:
-            self.vel.y += self.speed
-            
+            self.vel.y += 1
         # no move: anim ~> idle #
-        self.actionNew = "move"
-        if self.vel.y !=0 and self.vel.x !=0:   
-            self.vel *= 0.7071
-        else: self.actionNew = "idle"
+        if self.vel == vec(0,0): self.actionNew = "idle"
+        else: self.vel = utils.intVec(self.vel.normalize() * self.speed)
             
         # actions #
         if self.keys[pg.K_1]:
@@ -123,7 +120,7 @@ class Bullet(tileSprite.tileSprite):
         self.moveType = "dynamic"
         # movement #
         spread = randint(-settings.guns[self.weapon]["b_spread"], settings.guns[self.weapon]["b_spread"])
-        self.vel = direction.rotate(spread) * settings.guns[self.weapon]["b_speed"]
+        self.vel = utils.intVec(direction.rotate(spread) * settings.guns[self.weapon]["b_speed"])
         self.angle = angle + spread
         # image #
         self.animator = animations.animator(self.gameScene.state.gallery,"bullet")
@@ -155,13 +152,15 @@ class zombie(tileSprite.tileSprite):
         self.speed = choice(settings.z_speeds)
         self.radius = settings.z_radius
         self.pathType = choice(["follower","follower","follower", "finder"])
+        self.lastPos = vec(0,0)
+        self.tickpath = 5000
+        self.lastPathCalc = 0
         # gameplay #
         self.rotate()
         self.health = settings.z_health
         self.damage = settings.z_damage
         self.actorType = "zombie"
-        self.tickpath = 10000
-        self.lastpath = 0
+        
            
     def rotate(self, angle = None):
         if angle == None: angle = (self.gameScene.objects.player.pos - self.pos).angle_to(vec(1, 0))
@@ -172,30 +171,36 @@ class zombie(tileSprite.tileSprite):
             if mob.ID != self.ID:
                 dist = self.pos - mob.pos
                 if 0 < dist.length() < self.radius:
-                    self.vel += (dist.normalize()* -self.speed)
+                    self.vel += dist.normalize()
 
     def navPath(self):
-        current = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
+        pos = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
         target = self.maptoGrid(vec(self.col_rect.center))
-        foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, target, current)
+        foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, target, pos)
         path = []
-        while current != target:
-            toCurrent = foundPath[utils.vec2int(current)]
-            path.append(toCurrent)
-            current -= toCurrent
+        while pos != target:
+            currentNode = foundPath.get(utils.tup(pos),None)
+            if currentNode == None: break
+            pos, move = currentNode["from"], currentNode["direct"]
+            path.append(move*-1)
         path.reverse()
-        if path == []: path = [vec(0,0)]
         return path
 
     def controls(self):
+        pos = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
+        target = self.maptoGrid(vec(self.col_rect.center))
         self.vel = vec(0,0)
-        path = self.navPath()
-        self.vel = path[0].normalize() * self.speed
+        now = pg.time.get_ticks()
+        if self.lastPath - now < 0:
+            self.lastPath = now
+            path = self.navPath()
+        else:
+
+        if path == []: self.vel = vec(0,0)
+        else: self.vel = utils.intVec(path[0].normalize() * self.speed)
     # pythag speed adjustment #
         self.actionNew = "move"
-        if self.vel.y !=0 and self.vel.x !=0:
-            self.vel *= 0.7071
-        elif self.vel == vec(0,0): self.actionNew = "idle"
+        if self.vel == vec(0,0): self.actionNew = "idle"
         self.vel = vec(int(self.vel.x), int(self.vel.y))
             
     def draw_health(self):
@@ -213,7 +218,9 @@ class zombie(tileSprite.tileSprite):
         self.controls()
         self.rotate()
         self.avoidMobs()
+        print("pre-move: ",self.col_rect.center, ", vel: ",self.vel)
         super().update()
+        print( "post-move:",self.col_rect.center, ", vel: ",self.vel)
 
         if self.checkAction(self.actionNew):
             self.action = self.actionNew
@@ -221,6 +228,3 @@ class zombie(tileSprite.tileSprite):
         self.animator.update()
         if self.animator.nextChange:
             self.changeImg()
-        
-        
-        

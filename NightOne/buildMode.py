@@ -22,7 +22,7 @@ class buildMode(tileSprite.tileSprite):
         # rect management #
         self.tileSizeVec = vec(self.gameScene.state.tileSize,self.gameScene.state.tileSize)
         # gameplay #
-        self.scrap = 0
+        self.buildPoints = 0
         self.delay = pg.time.get_ticks()
 
     def buttonControls(self):
@@ -58,30 +58,33 @@ class buildMode(tileSprite.tileSprite):
 
     def mouseControls(self):
         # mousePos ~> tile placement #
-        self.col_rect.topleft = vec(self.mousePos.x // self.tileSizeVec.x,self.mousePos.y // self.tileSizeVec.y) * self.tileSizeVec.x
+        self.col_rect.topleft = self.maptoGrid(self.mouseScreenPos)
         self.rect.center = self.col_rect.center
         # wall placement and removal #
-        newScrap = self.scrap - settings.bm_objects[self.material]["cost"]
+        newScrap = self.buildPoints - settings.bm_objects[self.material]["cost"]
         if self.mousePressed[0] and newScrap >= 0:
             hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupAll, False, tileSprite.collideDetect)
             if len(hits) == 0:
                 environments.playerWall(self.gameScene, self.col_rect.topleft, self.image, self.material)
-                self.scrap = newScrap
-                self.gameScene.materialsTxt = "MATERIALS: " + str(self.scrap)
+                self.buildPoints = newScrap
+                self.gameScene.graph.walls.append(self.maptoGrid(self.mousePos))
+                self.gameScene.materialsTxt = "MATERIALS: " + str(self.buildPoints)
         elif self.mousePressed[2]:   
             hits = pg.sprite.spritecollide(self, self.gameScene.objects.groupAll, False, tileSprite.collideDetect)
             if len(hits)>0:
                 for hit in hits:
                     if hit.actorType == "playerWall":
-                        self.scrap += settings.bm_objects[hits[0].material]["cost"] // 2
-                        self.gameScene.materialsTxt = "MATERIALS: " + str(self.scrap)
+                        self.buildPoints += settings.bm_objects[hits[0].material]["cost"] // 2
+                        self.gameScene.materialsTxt = "MATERIALS: " + str(self.buildPoints)
+                        self.gameScene.graph.walls.remove(self.maptoGrid(self.mousePos))
                         hit.kill()
 
     def update(self):
         # refresh inputs #
         self.keys = self.gameScene.keys
         self.mousePressed = self.gameScene.mousePressed
-        self.mousePos = self.gameScene.camera.reverseVec(self.gameScene.mousePos)
+        self.mousePos = self.gameScene.mousePos
+        self.mouseScreenPos = self.gameScene.camera.reverseVec(self.mousePos)
         # mouse controls #
         self.mouseControls()
         # button control delay #

@@ -1,3 +1,6 @@
+import pygame as pg
+vec = pg.math.Vector2
+
 def cleanDuplicates(structure):
     clean = []
     for item in structure:
@@ -18,6 +21,9 @@ def gen_dict_extract(key, var):
                     for result in gen_dict_extract(key, d):
                         yield result
 
-def vec2int(v):
+def tup(v):
     return (int(v.x), int(v.y))
+
+def intVec(v):
+    return vec(tup(v))
 

@@ -71,6 +71,8 @@ class tileSprite(pg.sprite.Sprite):
                         self.kill()
                 # zombie hits target ~> attack animation #
                 if self.actorType == "zombie" and self.action not in settings.a_continious and hit.actorType in self.gameScene.objects.zTargets:
+                    if hit.health // self.damage + self.gameScene.state.upZombies < 10:
+                        collide = False
                     self.actionNew =self.action = "meleeattack"
                     self.animator.changeAnim(self.actionNew)
                     hit.health -= self.damage
@@ -125,11 +127,13 @@ class tileSprite(pg.sprite.Sprite):
     def update(self):
         # change in x and y is calculated off velocity and the change in time
         if self.moveType == "dynamic":
-            self.moveDist = self.vel * self.gameScene.state.del_t
+            self.moveDist = self.vel * (self.gameScene.state.del_t%1)
             self.moveDist = vec(int(self.moveDist.x),int(self.moveDist.y))
             if self.moveDist.y !=0 or self.moveDist.x !=0:
                 # performs movement
                 self.move()
 
         if self.health < 0:
+            if self.actorType == "zombie":
+                self.gameScene.objects.buildMode.buildPoints += 5
             self.kill()
