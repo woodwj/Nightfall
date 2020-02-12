@@ -50,10 +50,10 @@ class gameScene:
                 elif tile == 'P':
                     self.objects.player = actors.player(self, topLeft)
                 # zombie sprite #
-                elif tile == "Z":
+                elif tile == 'Z':
                     actors.zombie(self, topLeft)
                 # spawner tile #
-                elif tile == "s":
+                elif tile == 's':
                     self.objects.spawners.append(topLeft)
 
         # initilize text
@@ -101,6 +101,7 @@ class gameScene:
     # draw backround -> grid -> spridtes -> text #
     def draw(self):
         # backround #
+        pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.state.screen.fill(settings.bgColour)
         # grid #
         if self.state.bMode:
@@ -108,10 +109,12 @@ class gameScene:
             self.state.screen.blit(self.objects.buildMode.image, self.camera.applySprite(self.objects.buildMode))
         # camera-adjusted sprites #
         for sprite in self.objects.groupAll:
-            if sprite.actorType == "zombie":
-                sprite.draw_health()
+            if sprite.actorType in ["zombie","player"]:
+               sprite.draw_health()
             self.state.screen.blit(sprite.image, self.camera.applySprite(sprite))
+            #pg.draw.rect(self.state.screen,settings.RED, self.camera.applySprite(sprite),1)
         # text #
+        
         self.state.screen.blit(self.state.font.render(self.materialsTxt, True, settings.WHITE),(10,10))
         self.state.screen.blit(self.state.font.render(self.roundTxt, True, settings.WHITE),(10,self.state.tileSize *1))
         # render display #

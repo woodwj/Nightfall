@@ -27,7 +27,7 @@ class player(tileSprite.tileSprite):
         self.action, self.weapon = "idle", "handgun"
         self.last_shot = 0
         # player settings #
-        self.health = settings.p_health
+        self.maxHealth = self.health = settings.p_health
         self.actorType = "player"
     
     # controls: movements, actions #
@@ -159,7 +159,7 @@ class zombie(tileSprite.tileSprite):
         self.foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, start, target)
         # gameplay #
         self.rotate()
-        self.health = settings.z_health
+        self.maxHealth = self.health = settings.z_health
         self.damage = settings.z_damage
         self.actorType = "zombie"
         
@@ -208,25 +208,12 @@ class zombie(tileSprite.tileSprite):
         if self.vel == vec(0,0): self.actionNew = "idle"
         self.vel = vec(int(self.vel.x), int(self.vel.y))
         self.lastTarget = target
-            
-    def draw_health(self):
-        # colours #
-        healthPerHex = int(max(self.health,0) / settings.z_health * 255)
-        col = (255-healthPerHex, healthPerHex, 0)
-        # health bar #
-        width = int(self.col_rect.width * self.health / settings.z_health)
-        self.health_bar = pg.Rect(0, 0, width, 5)
-        if self.health < settings.z_health:
-            pg.draw.rect(self.image, col, self.health_bar)
-            pg.draw.rect(self.image, settings.BLACK, self.health_bar,1)
 
     def update(self):
         self.controls()
         self.rotate()
         self.avoidMobs()
-        #print("pre-move: ",self.col_rect.center, ", vel: ",self.vel)
         super().update()
-        #print( "post-move:",self.col_rect.center, ", vel: ",self.vel)
 
         if self.checkAction(self.actionNew):
             self.action = self.actionNew

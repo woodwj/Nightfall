@@ -13,8 +13,8 @@ BLACK = (0,0,0)
 GREY = (65,65,65)
 bgColour = GREY
 # screen Settings
-s_screenWidth = 1920
-s_screenHeight = 1080
+s_screenWidth = 1000
+s_screenHeight = 600
 s_FPS = 120
 s_title = "NightOne"
 s_tileSize = 48
@@ -44,7 +44,7 @@ guns = {
         },
 
     "shotgun":{
-        "b_speed" : 800,
+        "b_speed" : 500,
         "b_spread" : 8,
         "b_lifeTime" : 10000,
         "b_rate" : 750,

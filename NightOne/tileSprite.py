@@ -123,6 +123,17 @@ class tileSprite(pg.sprite.Sprite):
         self.image = pg.transform.rotate(self.ogImage, self.angle)
         self.rect = self.image.get_rect(center  = self.pos)
         self.col_rect.center = self.pos
+    
+    def draw_health(self):
+        # colours #
+        healthPerHex = int(max(self.health,0) / self.maxHealth * 255)
+        col = (255-healthPerHex, healthPerHex, 0)
+        # health bar #
+        width = int(self.col_rect.width * self.health / self.maxHealth)
+        self.health_bar = pg.Rect(0, 0, width, 5)
+        if self.health < settings.z_health:
+            pg.draw.rect(self.image, col, self.health_bar)
+            pg.draw.rect(self.image, settings.BLACK, self.health_bar,1)
 
     def update(self):
         # change in x and y is calculated off velocity and the change in time
