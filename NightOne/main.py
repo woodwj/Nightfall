@@ -51,7 +51,7 @@ class gameScene:
                     self.objects.player = actors.player(self, topLeft)
                 # zombie sprite #
                 elif tile == "Z":
-                    actors.zombie(self, topLeft)
+                   actors.zombie(self, topLeft)
                 # spawner tile #
                 elif tile == "s":
                     self.objects.spawners.append(topLeft)
@@ -88,11 +88,11 @@ class gameScene:
                 multiplier = self.state.roundnumber * 0.15
                 self.state.roundzombies = int(multiplier * self.state.maxzombies)
                 # update round text
-                self.roundTxt = "ROUND: " + str(self.state.roundnumber)
+                self.roundTxt = "NIGHT: " + str(self.state.roundnumber)
             # round countdown #
             if event.type == settings.e_ROUNDCOUNTDOWN:
                 if not self.state.round:
-                    self.roundTxt = "NEXT ROUND: " + str(self.state.countdown)
+                    self.roundTxt = "DAYLIGHT REMAINING: " + str(self.state.countdown)
                     self.state.countdown -= 1
                     if self.state.countdown < 0:
                         ROUNDSTART = pg.event.Event(settings.e_ROUNDSTART, roundnumber = self.state.roundnumber)
