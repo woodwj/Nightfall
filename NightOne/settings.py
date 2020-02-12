@@ -10,7 +10,7 @@ BLUE = (0,0,255)
 YELLOW = (255,255,0)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-GREY = (65,65,65)
+GREY = (100,100,100)
 bgColour = GREY
 # screen Settings
 s_screenWidth = 1000

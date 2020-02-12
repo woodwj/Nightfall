@@ -190,18 +190,20 @@ class zombie(tileSprite.tileSprite):
         shortestPath = []
         target = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center))
         if self.lastTarget == None: self.lastTarget = target
-        start = self.maptoGrid(vec(self.col_rect.center))
+        start = self.maptoGrid(self.pos)
         now = pg.time.get_ticks()
         if now - self.sincePathCalc > self.tickPathCalc:
             self.sincePathCalc = now
             self.foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, start, target)
         shortestPath = self.navPath(self.foundPath, start, self.lastTarget)
         if target != self.lastTarget:
-            extraPath =  pathfinding.a_star_algorithm(self.gameScene.graph, self.lastTarget, target)
-            ret = self.navPath(extraPath,self.lastTarget,target)
-            shortestPath.extend(ret)
+            shortestPath.append(target - self.lastTarget)
+            #extraPath =  pathfinding.a_star_algorithm(self.gameScene.graph, self.lastTarget, target)
+            #ret = self.navPath(extraPath,self.lastTarget,target)
+            #shortestPath.extend(ret)
                 
-        if shortestPath == []: self.vel = vec(0,0)
+        if shortestPath == []: 
+            self.vel = vec(0,0)
         else: self.vel = utils.intVec(shortestPath[0].normalize() * self.speed)
     # pythag speed adjustment #
         self.actionNew = "move"
