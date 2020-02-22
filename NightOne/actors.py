@@ -152,7 +152,7 @@ class zombie(tileSprite.tileSprite):
         self.speed = choice(settings.z_speeds)
         self.radius = settings.z_radius
         # pathfinding #
-        self.tickPathCalc = 5000
+        self.tickPathCalc = 3000
         self.sincePathCalc = 0
         self.lastTarget = None
         target, start = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center)), self.maptoGrid(vec(self.col_rect.center))
@@ -197,18 +197,19 @@ class zombie(tileSprite.tileSprite):
             self.foundPath = pathfinding.a_star_algorithm(self.gameScene.graph, start, target)
         shortestPath = self.navPath(self.foundPath, start, self.lastTarget)
         if target != self.lastTarget:
-            shortestPath.append(target - self.lastTarget)
-            #extraPath =  pathfinding.a_star_algorithm(self.gameScene.graph, self.lastTarget, target)
-            #ret = self.navPath(extraPath,self.lastTarget,target)
-            #shortestPath.extend(ret)
-                
+            #shortestPath.append(utils.intVec(target - self.lastTarget))
+            ret = pathfinding.a_star_algorithm(self.gameScene.graph, self.lastTarget, target)
+            for key in ret:
+                if self.foundPath.get(key,"allowed")=="allowed":
+                    self.foundPath[key]= ret[key]
+            
         if shortestPath == []: 
             self.vel = vec(0,0)
+            self.actionNew = "idle"
         else: self.vel = utils.intVec(shortestPath[0].normalize() * self.speed)
     # pythag speed adjustment #
         self.actionNew = "move"
-        if self.vel == vec(0,0): self.actionNew = "idle"
-        self.vel = vec(int(self.vel.x), int(self.vel.y))
+        self.vel = utils.intVec(self.vel)
         self.lastTarget = target
 
     def update(self):
