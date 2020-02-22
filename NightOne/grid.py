@@ -45,7 +45,7 @@ class weightedGrid:
 
     def cost(self, from_node, to_node):
         if (vec(to_node) - vec(from_node)).length_squared() == 1:
-            return self.weights.get(to_node, settings.t_weight) +  int(2 * self.gameScene.state.tileSize)
+            return self.weights.get(to_node, settings.t_weight) +  int(2.5 * self.gameScene.state.tileSize)
         else:
             return self.weights.get(to_node, settings.t_weight) + self.gameScene.state.tileSize
 

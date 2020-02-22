@@ -111,10 +111,10 @@ class tileSprite(pg.sprite.Sprite):
                 change = True
         # when change shouldnt happen #
         if self.action in settings.a_continious:
-            change = False
-            # at the end of a continueous action #
-            if self.animator.animCount == self.animator.animLength-1:
-                change = True
+            change = False        
+            # but at the end of a continueous action #
+        if self.animator.animCount == self.animator.animLength-1:
+            change = True
         return change
 
     # rotate img + adjust rects
