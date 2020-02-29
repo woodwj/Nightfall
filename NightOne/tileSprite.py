@@ -63,7 +63,7 @@ class tileSprite(pg.sprite.Sprite):
             collide = True
             for hit in hits:
                 # stop bullet from interacting with walls #
-                if hit.actorType == "bullet" or self.actorType== "bullet":
+                if hit.actorType == "bullet" or self.actorType == "bullet":
                     collide = False
                     # bullet hits target ~> deal damage ~> destroy bullet #
                     if hit.actorType in self.gameScene.objects.bTargets:
@@ -77,24 +77,24 @@ class tileSprite(pg.sprite.Sprite):
                     self.animator.changeAnim(self.actionNew)
                     hit.health -= self.damage
                     
-        if collide:
-            if direct == "x":
-                # left ~> right #
-                if self.vel.x > 0:
-                    self.col_rect.right = hits[0].col_rect.left
-                # right ~> left #
-                elif self.vel.x < 0:
-                    self.col_rect.left = hits[0].col_rect.right
-                self.vel.x = 0
+                if collide:
+                    if direct == "x":
+                        # left ~> right #
+                        if self.vel.x > 0:
+                            self.col_rect.right = hits[0].col_rect.left
+                        # right ~> left #
+                        elif self.vel.x < 0:
+                            self.col_rect.left = hits[0].col_rect.right
+                        self.vel.x = 0
 
-            elif direct == "y":
-                # up ~> down #
-                if self.vel.y > 0:
-                    self.col_rect.bottom = hits[0].col_rect.top
-                # down -> up
-                elif self.vel.y < 0:
-                    self.col_rect.top = hits[0].col_rect.bottom    
-                self.vel.y = 0
+                    elif direct == "y":
+                        # up ~> down #
+                        if self.vel.y > 0:
+                            self.col_rect.bottom = hits[0].col_rect.top
+                        # down -> up
+                        elif self.vel.y < 0:
+                            self.col_rect.top = hits[0].col_rect.bottom    
+                        self.vel.y = 0
     
     # animation change ~> new image # 
     def changeImg(self):
@@ -111,10 +111,10 @@ class tileSprite(pg.sprite.Sprite):
                 change = True
         # when change shouldnt happen #
         if self.action in settings.a_continious:
-            change = False
-            # at the end of a continueous action #
-            if self.animator.animCount == self.animator.animLength-1:
-                change = True
+            change = False        
+            # but at the end of a continueous action #
+        if self.animator.animCount == self.animator.animLength-1:
+            change = True
         return change
 
     # rotate img + adjust rects
