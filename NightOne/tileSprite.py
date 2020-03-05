@@ -104,6 +104,7 @@ class tileSprite(pg.sprite.Sprite):
     def checkAction(self, action, weapon = None):
         change = False
         # when change should happen #
+
         if hasattr(self, "weapon"):
             if action != self.action or weapon != self.weapon:
                 change = True

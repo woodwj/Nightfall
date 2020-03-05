@@ -112,9 +112,7 @@ class gameScene:
             if sprite.actorType in ["zombie","player"]:
                sprite.draw_health()
             self.state.screen.blit(sprite.image, self.camera.applySprite(sprite))
-            #pg.draw.rect(self.state.screen,settings.RED, self.camera.applySprite(sprite),1)
         # text #
-        
         self.state.screen.blit(self.state.font.render(self.materialsTxt, True, settings.WHITE),(10,10))
         self.state.screen.blit(self.state.font.render(self.roundTxt, True, settings.WHITE),(10,self.state.tileSize *1))
         # render display #
@@ -167,11 +165,7 @@ class gameState:
         self.screenWidth = settings.s_screenWidth
         self.screenHeight = settings.s_screenHeight
         self.tileSize = settings.s_tileSize
-        self.gridWidth = settings.s_gridWidth
-        self.gridHeight = settings.s_gridHeight
         self.FPS = settings.s_FPS
-        self.halfWidth = int( 0.5* self.screenWidth )
-        self.halfHeight = int( 0.5* self.screenHeight )
         self.size = (self.screenWidth,self.screenHeight)
         #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
         self.screen = pg.display.set_mode(self.size)
