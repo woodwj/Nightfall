@@ -8,11 +8,12 @@
 ░ ░░   ░ ▒░ ▒ ░  ░   ░  ▒ ░▒░ ░    ░     ░       ▒   ▒▒ ░░ ░ ▒  ░░ ░ ▒  ░
    ░   ░ ░  ▒ ░░ ░   ░  ░  ░░ ░  ░       ░ ░     ░   ▒     ░ ░     ░ ░   
          ░  ░        ░  ░  ░  ░                      ░  ░    ░  ░    ░  ░
-                                                                                                                                       
+                                                                         
+                                                                        
 
-|NightFall is a solo zombie survival game. Try to beat your highest round|
-|by constructing your base, raising defences during daylight and blasting|
-|zombies when nightFalls.                                                |
+NightFall is a solo zombie survival game. Try to beat your highest round
+by constructing your base, raising defences during daylight and blasting
+zombie when nightFalls.
 
     ~~~~~~~~~~~~~~~~~~~~~~~~> CONTROLS <~~~~~~~~~~~~~~~~~~~~~~~~~
     #############################################################
