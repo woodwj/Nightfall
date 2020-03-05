@@ -112,9 +112,7 @@ class gameScene:
             if sprite.actorType in ["zombie","player"]:
                sprite.draw_health()
             self.state.screen.blit(sprite.image, self.camera.applySprite(sprite))
-            #pg.draw.rect(self.state.screen,settings.RED, self.camera.applySprite(sprite),1)
         # text #
-        
         self.state.screen.blit(self.state.font.render(self.materialsTxt, True, settings.WHITE),(10,10))
         self.state.screen.blit(self.state.font.render(self.roundTxt, True, settings.WHITE),(10,self.state.tileSize *1))
         # render display #

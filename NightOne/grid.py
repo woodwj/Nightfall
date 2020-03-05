@@ -22,7 +22,7 @@ class mapManager():
         self.width = int(self.tilesWide * self.gameScene.state.tileSize)
         self.height = int(self.tilesHigh * self.gameScene.state.tileSize)
         
-class weightedGrid:
+class weightedGrid():
     def __init__(self,gameScene, width, height):
         self.gameScene = gameScene
         self.mapWidth ,self.mapHeight = width, height
