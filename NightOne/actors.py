@@ -215,7 +215,7 @@ class zombie(tileSprite.tileSprite):
     def update(self):
         self.controls()
         self.rotate()
-        #self.avoidMobs()
+        self.avoidMobs()
         super().update()
 
         if self.checkAction(self.actionNew):

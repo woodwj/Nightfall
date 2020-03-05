@@ -2,7 +2,7 @@ import pygame as pg
 import utils
 import pathlib
 from pathlib import Path
-import settings
+from settings import *
 
 vec = pg.math.Vector2
 # class for the map to draw grid while developing and decode files
@@ -50,7 +50,7 @@ class weightedGrid():
             return self.weights.get(to_node, settings.t_weight) + self.gameScene.state.tileSize
 
 class camera:
-    def __init__(self, gameScene, totalWidth, totalHeight):
+    def __init__(self, gameScene, width, height):
         # creates the camera and imports some settings
         self.gameScene = gameScene
         self.camera = pg.Rect(0, 0, totalWidth, totalHeight)
@@ -75,9 +75,9 @@ class camera:
     # grid alignment #
     def draw_Grid(self):
         for x in range(int(self.offset.x), self.gameScene.map.width, self.gameScene.state.tileSize):
-            pg.draw.line(self.gameScene.state.screen, settings.WHITE, (x, 0), (x, self.gameScene.map.height))
+            pg.draw.line(self.gameScene.state.screen, WHITE, (x, 0), (x, self.gameScene.map.height))
         for y in range(int(self.offset.y), self.gameScene.map.height, self.gameScene.state.tileSize):
-            pg.draw.line(self.gameScene.state.screen, settings.WHITE, (0, y), (self.gameScene.map.width, y))
+            pg.draw.line(self.gameScene.state.screen, WHITE, (0, y), (self.gameScene.map.width, y))
 
     def update(self, target):
         # set targets real position on the screen for target's use

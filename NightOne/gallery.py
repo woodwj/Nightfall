@@ -1,6 +1,5 @@
 import pygame as pg 
 import pathlib
-import settings
 from pathlib import Path
 
 class gallery():
