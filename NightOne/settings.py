@@ -65,9 +65,9 @@ guns = {
 r_countdown = 10
 # zombie settings
 z_collisionRect = pg.Rect(0, 0, int(s_tileSize*sp_colScale), int(s_tileSize*sp_colScale))
-z_speeds = [125,150,175,200]
+z_speeds = [150,160,165,170,175,180,185,190,195,200]
 z_health = 750
-z_maxzombies = 30
+z_maxzombies = 15
 z_damage = 100
 z_radius = 200
 # build mode settings
