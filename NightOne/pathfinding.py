@@ -5,7 +5,6 @@ import utils
 vec = pg.math.Vector2
 
 def heuristic(a, b):
-    # heuristic uses the distance between location and target
     return (abs(a.x - b.x) + abs(a.y - b.y)) * settings.s_tileSize
 
 def a_star_algorithm(graph, start, end):
@@ -22,7 +21,7 @@ def a_star_algorithm(graph, start, end):
             break
         for nb in graph.find_neighbors(vec(current)):
             nb = utils.tup(nb)
-            # c(move) = f(x) + g(x) ~> cost = costOfMove + heuristic
+            # c(move) = f(x) + g(x) ~> cost = costUpToHere + heuristic
             nextCost = cost[current] + graph.cost(current, nb)
             if nb not in cost or nextCost < cost[nb]:
                 cost[nb] = nextCost
@@ -30,6 +29,7 @@ def a_star_algorithm(graph, start, end):
                 frontier.enQueue(nb, priority)
                 path[nb] = {"from": vec(current), "direct": vec(current)-vec(nb)}
     return path
+
 
 class priorityQueue:
     def __init__(self):
