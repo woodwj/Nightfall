@@ -71,11 +71,11 @@ class tileSprite(pg.sprite.Sprite):
                         self.kill()
                 # zombie hits target ~> attack animation #
                 if self.actorType == "zombie" and self.action not in settings.a_continious and hit.actorType in self.gameScene.objects.zTargets:
-                    if hit.health // self.damage + self.gameScene.state.upZombies < 10:
+                    if (hit.health // self.damage) + self.gameScene.state.upZombies < 10:
                         collide = False
-                    self.actionNew =self.action = "meleeattack"
-                    self.animator.changeAnim(self.actionNew)
-                    hit.health -= self.damage
+                        self.actionNew =self.action = "meleeattack"
+                        self.animator.changeAnim(self.actionNew)
+                        hit.health -= self.damage
                     
                 if collide:
                     if direct == "x":

@@ -22,7 +22,7 @@ class buildMode(tileSprite.tileSprite):
         # rect management #
         self.tileSizeVec = vec(self.gameScene.state.tileSize,self.gameScene.state.tileSize)
         # gameplay #
-        self.buildPoints = 1000
+        self.buildPoints = 0
         self.delay = pg.time.get_ticks()
 
     def buttonControls(self):

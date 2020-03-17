@@ -13,8 +13,8 @@ BLACK = (0,0,0)
 GREY = (100,100,100)
 bgColour = GREY
 # screen Settings
-s_screenWidth = 1000
-s_screenHeight = 600
+s_screenWidth = 1920
+s_screenHeight = 1080
 s_FPS = 120
 s_title = "NightOne"
 s_tileSize = 48
@@ -69,7 +69,7 @@ z_speeds = [150,160,165,170,175,180,185,190,195,200]
 z_health = 750
 z_maxzombies = 15
 z_damage = 100
-z_radius = 200
+z_radius = 100
 # build mode settings
 bMode = False
 bm_objects = {

@@ -161,14 +161,13 @@ class gameState:
         # time #
         self.del_t = 0
         # screen #
-        pg.display.set_caption(settings.s_title)
         self.screenWidth = settings.s_screenWidth
         self.screenHeight = settings.s_screenHeight
         self.tileSize = settings.s_tileSize
         self.FPS = settings.s_FPS
         self.size = (self.screenWidth,self.screenHeight)
-        #self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
-        self.screen = pg.display.set_mode(self.size)
+        self.screen = pg.display.set_mode( (0,0) , pg.FULLSCREEN)
+        #self.screen = pg.display.set_mode(self.size)
         # text #
         self.font = settings.s_font
         # gameplay #
