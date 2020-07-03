@@ -86,9 +86,9 @@ class player(tileSprite.tileSprite):
         # shotgun burst
         if self.weapon == "shotgun": 
             for burst in range(0,5):
-                Bullet(self.gameScene, position, direction, self.angle, self.weapon)
+                bullet(self.gameScene, position, direction, self.angle, self.weapon)
         # carbine bullets        
-        else: Bullet(self.gameScene, position, direction, self.angle, self.weapon)
+        else: bullet(self.gameScene, position, direction, self.angle, self.weapon)
         self.vel += vec(-1*settings.guns[self.weapon]["b_kickback"], 0).rotate(-self.angle)
 
     def update(self):
@@ -107,7 +107,7 @@ class player(tileSprite.tileSprite):
         else: self.rotate()
         
 
-class Bullet(tileSprite.tileSprite):
+class bullet(tileSprite.tileSprite):
     def __init__(self, gameScene, pos, direction, angle, weapon):
         self.groups = gameScene.objects.groupAll, gameScene.objects.groupBullets
         super().__init__(gameScene, self.groups, center=pos)
@@ -152,7 +152,7 @@ class zombie(tileSprite.tileSprite):
         self.speed = choice(settings.z_speeds)
         self.radius = settings.z_radius
         # pathfinding #
-        self.tickPathCalc = 3000
+        self.tickPathCalc = 500
         self.sincePathCalc = 0
         self.lastTarget = None
         target, start = self.maptoGrid(vec(self.gameScene.objects.player.col_rect.center)), self.maptoGrid(vec(self.col_rect.center))
@@ -172,7 +172,7 @@ class zombie(tileSprite.tileSprite):
             if mob.ID != self.ID:
                 dist = self.pos - mob.pos
                 if 0 < dist.length() < self.radius:
-                    self.vel += dist.normalize()
+                    self.vel += (dist.normalize()* self.gameScene.state.tileSize)
 
     def navPath(self, path, start, target):
         pos = target
